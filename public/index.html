@@ -484,11 +484,8 @@ function renderHTML(text) {
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-    .replace(/
-
-/g, '</p><p>')
-    .replace(/
-/g, '<br>');
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
 
   return '<p>' + t + '</p>';
 }

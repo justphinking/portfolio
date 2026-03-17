@@ -521,28 +521,42 @@ function addMessage(role, content, instant) {
 function typewrite(el, msgEl, rawText) {
   return new Promise(resolve => {
     const imageKeys = extractImages(rawText);
-    const plain = stripImageTags(rawText);
-    let i = 0;
 
-    const cursor = document.createElement('span');
-    cursor.className = 'cursor';
+    el.innerHTML = renderHTML(rawText);
 
-    function speed() {
-      const ch = plain[i];
-      if (ch === '.' || ch === '!' || ch === '?') return 55;
-      if (ch === ',') return 28;
-      return 20;
+    const words = [];
+    function wrapWords(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const frag = document.createDocumentFragment();
+        node.textContent.split(/(\s+)/).forEach(part => {
+          if (/^\s+$/.test(part)) {
+            frag.appendChild(document.createTextNode(part));
+          } else if (part.length > 0) {
+            const span = document.createElement('span');
+            span.className = 'tw-word';
+            span.textContent = part;
+            span.style.opacity = '0';
+            words.push(span);
+            frag.appendChild(span);
+          }
+        });
+        node.parentNode.replaceChild(frag, node);
+      } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SCRIPT') {
+        Array.from(node.childNodes).forEach(wrapWords);
+      }
     }
+    wrapWords(el);
 
-    function tick() {
-      if (i < plain.length) {
-        el.textContent = plain.slice(0, i + 1);
-        el.appendChild(cursor);
+    let i = 0;
+    const delay = 38;
+
+    function revealNext() {
+      if (i < words.length) {
+        words[i].style.opacity = '1';
         i++;
         scrollBottom();
-        setTimeout(tick, speed());
+        setTimeout(revealNext, delay);
       } else {
-        cursor.remove();
         el.innerHTML = renderHTML(rawText);
         appendImages(msgEl, imageKeys);
         scrollBottom();
@@ -550,7 +564,7 @@ function typewrite(el, msgEl, rawText) {
       }
     }
 
-    tick();
+    revealNext();
   });
 }
 

@@ -206,6 +206,20 @@
     display: block;
   }
 
+  .loading-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 4px 0;
+  }
+
+  .loading-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    font-style: italic;
+  }
+
   /* Typing dots fallback */
   .typing {
     display: flex;
@@ -385,7 +399,7 @@ const LOADING_GIFS = [
 
 const PROFILE_IMG = '/img/profilo.jpg';
 
-const OPENING = `Oddio, eccone un altro: ciao, sono Botfolio, il mostruosamente overqualified assistente personale di Ulisse Poggioni. Posso calcolare il numero di molecole nel tuo corpo in 2 secondi, ma invece sono qui per rispondere alle tue domande sul lavoro di questo tizio, e vabbè. Quindi, che vuoi sapere?`;
+const OPENING = `Ciao, sono un'AI con fenomenali poteri cosmici ridotta a rispondere a domande su questo Ulisse Poggioni. Chiedimi pure quello che vuoi, che lavoro fa, cosa ha studiato, le sue competenze. Oppure dimmi di cosa ti occupi tu e partiamo da lì, che dici?`;
 
 const PROMPT_SUGGESTIONS = [
   'Chi è Ulisse Poggioni?',
@@ -551,7 +565,10 @@ function addTypingIndicator() {
       <div class="message-avatar"><img src="${PROFILE_IMG}" alt="Botfolio"></div>
       <div class="message-label">botfolio</div>
     </div>
-    <div class="loading-gif"><img src="${gifSrc}" alt=""></div>
+    <div class="loading-wrap">
+      <div class="loading-gif"><img src="${gifSrc}" alt=""></div>
+      <div class="loading-label">ci sto pensando</div>
+    </div>
   `;
   chat.appendChild(el);
   scrollBottom();

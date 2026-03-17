@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Ulisse Poggioni</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
     --surface: #272727;
     --border: #333333;
     --text: #d4d0c8;
-    --text-muted: #7a7670;
+    --text-user: #e8a0b0;
     --text-dim: #444240;
     --accent: #b8a888;
     --mono: 'DM Mono', monospace;
@@ -63,13 +63,35 @@
   .message {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     animation: fadeIn 0.25s ease;
   }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(3px); }
     to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .message-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .message-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+
+  .message-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .message-label {
@@ -86,7 +108,7 @@
   }
 
   .message-body.user-body {
-    color: var(--text-muted);
+    color: var(--text-user);
   }
 
   .message-body a {
@@ -124,7 +146,7 @@
     display: inline-block;
     width: 7px;
     height: 13px;
-    background: var(--text-muted);
+    background: var(--text);
     margin-left: 2px;
     vertical-align: middle;
     animation: blink 0.8s step-end infinite;
@@ -192,7 +214,7 @@
     outline: none;
     color: var(--text);
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 16px;
     line-height: 1.6;
     resize: none;
     max-height: 120px;
@@ -206,7 +228,7 @@
   #send-btn {
     background: transparent;
     border: 1px solid var(--border);
-    color: var(--text-muted);
+    color: var(--text-dim);
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.06em;
@@ -243,7 +265,7 @@
   .prompt-pill {
     background: transparent;
     border: 1px solid var(--border);
-    color: var(--text-muted);
+    color: var(--text-dim);
     font-family: var(--mono);
     font-size: 11px;
     padding: 5px 12px;
@@ -259,6 +281,7 @@
 
   @media (max-width: 480px) {
     .page { padding: 32px 16px 48px; gap: 24px; }
+    #user-input { font-size: 16px; }
   }
 </style>
 </head>
@@ -297,6 +320,14 @@ const IMAGES = {
   'ritratto':{ src: '/img/ritratto.jpg',caption: 'Ulisse Poggioni' },
 };
 
+const AVATARS = [
+  '/img/profili/p1.gif',
+  '/img/profili/p2.gif',
+  '/img/profili/p3.gif',
+  '/img/profili/p4.gif',
+  '/img/profili/p5.gif',
+];
+
 const OPENING = `Oddio, eccone un altro: ciao, sono Botfolio, il mostruosamente overqualified assistente personale di Ulisse Poggioni. Posso calcolare il numero di molecole nel tuo corpo in 2 secondi, ma invece sono qui per rispondere alle tue domande sul lavoro di questo tizio, e vabbè. Quindi, che vuoi sapere?`;
 
 const PROMPT_SUGGESTIONS = [
@@ -308,6 +339,10 @@ const PROMPT_SUGGESTIONS = [
 
 let history = [];
 let isLoading = false;
+
+function randomAvatar() {
+  return AVATARS[Math.floor(Math.random() * AVATARS.length)];
+}
 
 function autoResize(el) {
   el.style.height = 'auto';
@@ -367,14 +402,25 @@ function addMessage(role, content, instant) {
   const msg = document.createElement('div');
   msg.className = 'message';
 
+  const header = document.createElement('div');
+  header.className = 'message-header';
+
+  if (role === 'assistant') {
+    const avatarWrap = document.createElement('div');
+    avatarWrap.className = 'message-avatar';
+    avatarWrap.innerHTML = `<img src="${randomAvatar()}" alt="Botfolio">`;
+    header.appendChild(avatarWrap);
+  }
+
   const label = document.createElement('div');
   label.className = 'message-label';
   label.textContent = role === 'user' ? 'tu' : 'botfolio';
+  header.appendChild(label);
 
   const body = document.createElement('div');
   body.className = 'message-body' + (role === 'user' ? ' user-body' : '');
 
-  msg.appendChild(label);
+  msg.appendChild(header);
   msg.appendChild(body);
   chat.appendChild(msg);
   scrollBottom();
@@ -430,7 +476,8 @@ function addTypingIndicator() {
   const el = document.createElement('div');
   el.id = 'typing-indicator';
   el.className = 'message';
-  el.innerHTML = '<div class="message-label">botfolio</div><div class="typing"><span></span><span></span><span></span></div>';
+  const avatar = `<div class="message-avatar"><img src="${randomAvatar()}" alt="Botfolio"></div>`;
+  el.innerHTML = `<div class="message-header">${avatar}<div class="message-label">botfolio</div></div><div class="typing"><span></span><span></span><span></span></div>`;
   chat.appendChild(el);
   scrollBottom();
 }

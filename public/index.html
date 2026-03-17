@@ -113,14 +113,30 @@
   }
 
   .message-body a {
-    color: var(--accent);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(200,184,144,0.35);
-    transition: border-color 0.2s;
+    color: #e6c84a;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.2s;
   }
 
   .message-body a:hover {
-    border-color: var(--accent);
+    opacity: 0.75;
+  }
+
+  .kw {
+    color: #7ec98a;
+  }
+
+  .message-body ul {
+    margin: 8px 0 8px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .message-body li {
+    list-style: disc;
+    padding-left: 4px;
   }
 
   /* Inline image */
@@ -446,12 +462,30 @@ function stripImageTags(text) {
 
 function renderHTML(text) {
   let t = stripImageTags(text);
+
+  // Convert bullet list blocks (lines starting with - or *)
+  t = t.replace(/((?:^|
+)[*-] .+)+/g, match => {
+    const items = match.trim().split(/
+/).map(line =>
+      '<li>' + line.replace(/^[*-] /, '') + '</li>'
+    ).join('');
+    return '
+<ul>' + items + '</ul>
+';
+  });
+
   t = t
+    .replace(/\[k\](.*?)\[\/k\]/g, '<span class="kw">$1</span>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>');
+    .replace(/
+
+/g, '</p><p>')
+    .replace(/
+/g, '<br>');
+
   return '<p>' + t + '</p>';
 }
 

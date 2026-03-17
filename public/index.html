@@ -11,12 +11,13 @@
 
   :root {
     --bg: #1e1e1e;
-    --surface: #272727;
-    --border: #333333;
-    --text: #d4d0c8;
-    --text-user: #e8a0b0;
-    --text-dim: #444240;
-    --accent: #b8a888;
+    --surface: #2a2a2a;
+    --border: #3d3d3d;
+    --text: #e8e4dc;
+    --text-user: #f0a0b8;
+    --text-dim: #888580;
+    --text-label: #666260;
+    --accent: #c8b890;
     --mono: 'DM Mono', monospace;
   }
 
@@ -57,13 +58,13 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
   }
 
   .message {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     animation: fadeIn 0.25s ease;
   }
 
@@ -75,12 +76,12 @@
   .message-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
 
   .message-avatar {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
@@ -95,15 +96,15 @@
   }
 
   .message-label {
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-dim);
+    color: var(--text-label);
   }
 
   .message-body {
     font-size: 13px;
-    line-height: 1.75;
+    line-height: 1.8;
     color: var(--text);
   }
 
@@ -114,7 +115,7 @@
   .message-body a {
     color: var(--accent);
     text-decoration: none;
-    border-bottom: 1px solid rgba(184,168,136,0.3);
+    border-bottom: 1px solid rgba(200,184,144,0.35);
     transition: border-color 0.2s;
   }
 
@@ -122,16 +123,23 @@
     border-color: var(--accent);
   }
 
+  /* Inline image */
   .inline-image {
-    margin-top: 10px;
+    margin-top: 12px;
     border: 1px solid var(--border);
     display: inline-block;
     max-width: 320px;
+    cursor: zoom-in;
   }
 
   .inline-image img {
     width: 100%;
     display: block;
+    transition: opacity 0.2s;
+  }
+
+  .inline-image:hover img {
+    opacity: 0.85;
   }
 
   .inline-image-caption {
@@ -142,6 +150,30 @@
     border-top: 1px solid var(--border);
   }
 
+  /* Lightbox */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+  }
+
+  .lightbox.open {
+    display: flex;
+  }
+
+  .lightbox img {
+    max-width: 92vw;
+    max-height: 92vh;
+    object-fit: contain;
+    border: 1px solid var(--border);
+  }
+
+  /* Cursor */
   .cursor {
     display: inline-block;
     width: 7px;
@@ -157,6 +189,24 @@
     50%       { opacity: 0; }
   }
 
+  /* Loading animation */
+  .loading-gif {
+    width: 150px;
+    height: 150px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin: 4px 0;
+  }
+
+  .loading-gif img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Typing dots fallback */
   .typing {
     display: flex;
     gap: 5px;
@@ -268,7 +318,7 @@
     color: var(--text-dim);
     font-family: var(--mono);
     font-size: 11px;
-    padding: 5px 12px;
+    padding: 6px 14px;
     cursor: pointer;
     transition: all 0.2s;
     letter-spacing: 0.02em;
@@ -286,6 +336,11 @@
 </style>
 </head>
 <body>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
 <div class="page">
 
   <div class="header-img">
@@ -320,7 +375,7 @@ const IMAGES = {
   'ritratto':{ src: '/img/ritratto.jpg',caption: 'Ulisse Poggioni' },
 };
 
-const AVATARS = [
+const LOADING_GIFS = [
   '/img/profili/p1.gif',
   '/img/profili/p2.gif',
   '/img/profili/p3.gif',
@@ -328,20 +383,20 @@ const AVATARS = [
   '/img/profili/p5.gif',
 ];
 
+const PROFILE_IMG = '/img/profilo.jpg';
+
 const OPENING = `Oddio, eccone un altro: ciao, sono Botfolio, il mostruosamente overqualified assistente personale di Ulisse Poggioni. Posso calcolare il numero di molecole nel tuo corpo in 2 secondi, ma invece sono qui per rispondere alle tue domande sul lavoro di questo tizio, e vabbè. Quindi, che vuoi sapere?`;
 
 const PROMPT_SUGGESTIONS = [
   'Chi è Ulisse Poggioni?',
-  'Di cosa si occupa?',
-  'Parlami della sua musica',
-  "Cos'è il Coro del Pigneto?",
+  'Che sta succedendo? Come funziona questa cosa?',
 ];
 
 let history = [];
 let isLoading = false;
 
-function randomAvatar() {
-  return AVATARS[Math.floor(Math.random() * AVATARS.length)];
+function randomGif() {
+  return LOADING_GIFS[Math.floor(Math.random() * LOADING_GIFS.length)];
 }
 
 function autoResize(el) {
@@ -393,9 +448,23 @@ function appendImages(msgEl, keys) {
     const block = document.createElement('div');
     block.className = 'inline-image';
     block.innerHTML = `<img src="${img.src}" alt="${img.caption}" loading="lazy"><div class="inline-image-caption">${img.caption}</div>`;
+    block.addEventListener('click', () => openLightbox(img.src));
     msgEl.appendChild(block);
   });
 }
+
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
 
 function addMessage(role, content, instant) {
   const chat = document.getElementById('chat');
@@ -408,7 +477,7 @@ function addMessage(role, content, instant) {
   if (role === 'assistant') {
     const avatarWrap = document.createElement('div');
     avatarWrap.className = 'message-avatar';
-    avatarWrap.innerHTML = `<img src="${randomAvatar()}" alt="Botfolio">`;
+    avatarWrap.innerHTML = `<img src="${PROFILE_IMG}" alt="Botfolio">`;
     header.appendChild(avatarWrap);
   }
 
@@ -476,8 +545,14 @@ function addTypingIndicator() {
   const el = document.createElement('div');
   el.id = 'typing-indicator';
   el.className = 'message';
-  const avatar = `<div class="message-avatar"><img src="${randomAvatar()}" alt="Botfolio"></div>`;
-  el.innerHTML = `<div class="message-header">${avatar}<div class="message-label">botfolio</div></div><div class="typing"><span></span><span></span><span></span></div>`;
+  const gifSrc = randomGif();
+  el.innerHTML = `
+    <div class="message-header">
+      <div class="message-avatar"><img src="${PROFILE_IMG}" alt="Botfolio"></div>
+      <div class="message-label">botfolio</div>
+    </div>
+    <div class="loading-gif"><img src="${gifSrc}" alt=""></div>
+  `;
   chat.appendChild(el);
   scrollBottom();
 }

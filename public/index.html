@@ -5,27 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ulisse Poggioni</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0e0e0e;
-    --surface: #181818;
-    --surface2: #222222;
-    --border: #2a2a2a;
-    --text: #e8e4dc;
-    --text-muted: #6b6760;
-    --text-dim: #3d3b38;
-    --accent: #c8b89a;
-    --accent-glow: rgba(200, 184, 154, 0.12);
-    --red: #c0392b;
+    --bg: #1e1e1e;
+    --surface: #272727;
+    --border: #333333;
+    --text: #d4d0c8;
+    --text-muted: #7a7670;
+    --text-dim: #444240;
+    --accent: #b8a888;
     --mono: 'DM Mono', monospace;
-    --serif: 'DM Serif Display', serif;
   }
 
   html, body {
-    height: 100%;
+    min-height: 100%;
     background: var(--bg);
     color: var(--text);
     font-family: var(--mono);
@@ -33,264 +29,82 @@
     line-height: 1.6;
   }
 
-  /* Layout */
-  .layout {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    height: 100vh;
-    max-width: 1100px;
+  .page {
+    max-width: 640px;
     margin: 0 auto;
-  }
-
-  /* Sidebar */
-  .sidebar {
-    border-right: 1px solid var(--border);
-    padding: 40px 28px;
+    padding: 48px 24px 60px;
     display: flex;
     flex-direction: column;
-    gap: 40px;
-    overflow-y: auto;
-  }
-
-  .sidebar-header {}
-
-  .name {
-    font-family: var(--serif);
-    font-size: 28px;
-    line-height: 1.1;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-
-  .tagline {
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .divider {
-    height: 1px;
-    background: var(--border);
-  }
-
-  .sidebar-section {}
-
-  .sidebar-label {
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 12px;
-  }
-
-  .sidebar-links {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .sidebar-links a {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 12px;
-    transition: color 0.2s;
-    display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 32px;
   }
 
-  .sidebar-links a::before {
-    content: '→';
-    color: var(--text-dim);
-    font-size: 10px;
-  }
-
-  .sidebar-links a:hover {
-    color: var(--accent);
-  }
-
-  .sidebar-note {
-    margin-top: auto;
-    font-size: 11px;
-    color: var(--text-dim);
-    line-height: 1.7;
-  }
-
-  /* Chat area */
-  .chat-area {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  .header-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
-  }
-
-  .chat-header {
-    padding: 20px 32px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  .chat-header-text {
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 0.06em;
-  }
-
-  .messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-
-  .messages::-webkit-scrollbar { width: 4px; }
-  .messages::-webkit-scrollbar-track { background: transparent; }
-  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  /* Welcome state */
-  .welcome {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    text-align: center;
-    padding: 40px;
-    gap: 16px;
-  }
-
-  .welcome-title {
-    font-family: var(--serif);
-    font-size: 22px;
-    color: var(--text-muted);
-    font-style: italic;
-  }
-
-  .welcome-subtitle {
-    font-size: 11px;
-    color: var(--text-dim);
-    max-width: 340px;
-    line-height: 1.8;
-    letter-spacing: 0.04em;
-  }
-
-  .welcome-prompts {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 8px;
-  }
-
-  .prompt-pill {
-    background: transparent;
     border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 8px 16px;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
   }
 
-  .prompt-pill:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-glow);
+  .header-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
-  /* Messages */
+  .chat {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
   .message {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    max-width: 680px;
-    animation: fadeIn 0.3s ease;
+    gap: 4px;
+    animation: fadeIn 0.25s ease;
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .message.user {
-    align-self: flex-end;
-    align-items: flex-end;
-  }
-
-  .message.assistant {
-    align-self: flex-start;
-    align-items: flex-start;
+    from { opacity: 0; transform: translateY(3px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   .message-label {
-    font-size: 9px;
+    font-size: 10px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-dim);
-    margin-bottom: 2px;
   }
 
-  .message-bubble {
-    padding: 14px 18px;
-    border-radius: 2px;
+  .message-body {
     font-size: 13px;
     line-height: 1.75;
+    color: var(--text);
   }
 
-  .message.user .message-bubble {
-    background: var(--surface2);
-    border: 1px solid var(--border);
+  .message-body.user-body {
     color: var(--text-muted);
   }
 
-  .message.assistant .message-bubble {
-    background: transparent;
-    color: var(--text);
-    border: none;
-    padding: 0;
-  }
-
-  .message.assistant .message-bubble a {
+  .message-body a {
     color: var(--accent);
     text-decoration: none;
-    border-bottom: 1px solid rgba(200, 184, 154, 0.3);
+    border-bottom: 1px solid rgba(184,168,136,0.3);
     transition: border-color 0.2s;
   }
 
-  .message.assistant .message-bubble a:hover {
+  .message-body a:hover {
     border-color: var(--accent);
   }
 
-  /* Inline image */
   .inline-image {
-    margin-top: 12px;
+    margin-top: 10px;
     border: 1px solid var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-    max-width: 360px;
+    display: inline-block;
+    max-width: 320px;
   }
 
   .inline-image img {
@@ -299,18 +113,32 @@
   }
 
   .inline-image-caption {
-    padding: 8px 12px;
+    padding: 6px 10px;
     font-size: 10px;
     color: var(--text-dim);
     letter-spacing: 0.06em;
     border-top: 1px solid var(--border);
   }
 
-  /* Typing indicator */
+  .cursor {
+    display: inline-block;
+    width: 7px;
+    height: 13px;
+    background: var(--text-muted);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 0.8s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
   .typing {
     display: flex;
-    gap: 4px;
-    padding: 8px 0;
+    gap: 5px;
+    padding: 4px 0;
     align-items: center;
   }
 
@@ -319,30 +147,36 @@
     height: 4px;
     border-radius: 50%;
     background: var(--text-dim);
-    animation: blink 1.2s ease-in-out infinite;
+    animation: dot 1.2s ease-in-out infinite;
   }
 
   .typing span:nth-child(2) { animation-delay: 0.2s; }
   .typing span:nth-child(3) { animation-delay: 0.4s; }
 
-  @keyframes blink {
-    0%, 100% { opacity: 0.2; }
-    50% { opacity: 1; }
+  @keyframes dot {
+    0%, 100% { opacity: 0.2; transform: translateY(0); }
+    50%       { opacity: 1;   transform: translateY(-2px); }
   }
 
-  /* Input area */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+  }
+
   .input-area {
-    padding: 20px 32px 28px;
-    border-top: 1px solid var(--border);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .input-wrapper {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: flex-end;
     border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 12px 16px;
+    padding: 10px 14px;
     background: var(--surface);
     transition: border-color 0.2s;
   }
@@ -361,7 +195,7 @@
     font-size: 13px;
     line-height: 1.6;
     resize: none;
-    max-height: 140px;
+    max-height: 120px;
     min-height: 20px;
   }
 
@@ -376,8 +210,7 @@
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.06em;
-    padding: 6px 12px;
-    border-radius: 2px;
+    padding: 5px 11px;
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
@@ -387,7 +220,6 @@
   #send-btn:hover:not(:disabled) {
     border-color: var(--accent);
     color: var(--accent);
-    background: var(--accent-glow);
   }
 
   #send-btn:disabled {
@@ -396,111 +228,90 @@
   }
 
   .input-hint {
-    margin-top: 8px;
     font-size: 10px;
     color: var(--text-dim);
     letter-spacing: 0.04em;
   }
 
-  /* Mobile */
-  @media (max-width: 680px) {
-    .layout {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr;
-    }
-    .sidebar {
-      border-right: none;
-      border-bottom: 1px solid var(--border);
-      padding: 24px 20px;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .sidebar-header { flex: 1; }
-    .sidebar-section { display: none; }
-    .sidebar-note { display: none; }
-    .divider { display: none; }
-    .chat-area { height: calc(100vh - 110px); }
-    .messages { padding: 20px; }
-    .input-area { padding: 12px 16px 20px; }
+  .prompt-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .prompt-pill {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .prompt-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  @media (max-width: 480px) {
+    .page { padding: 32px 16px 48px; gap: 24px; }
   }
 </style>
 </head>
 <body>
-<div class="layout">
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="name">Ulisse<br>Poggioni</div>
-      <div class="tagline">Art Director · Roma</div>
+<div class="page">
+
+  <div class="header-img">
+    <img src="/img/header.jpg" alt="Ulisse Poggioni">
+  </div>
+
+  <div class="chat" id="chat"></div>
+
+  <div class="divider"></div>
+
+  <div class="input-area">
+    <div class="input-wrapper">
+      <textarea
+        id="user-input"
+        placeholder="scrivi qualcosa..."
+        rows="1"
+        onkeydown="handleKey(event)"
+        oninput="autoResize(this)"
+      ></textarea>
+      <button id="send-btn" onclick="sendMessage()">invia</button>
     </div>
+    <div class="input-hint">↵ invio &nbsp;·&nbsp; shift+↵ nuova riga</div>
+  </div>
 
-    <div class="divider"></div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">Link</div>
-      <ul class="sidebar-links">
-        <li><a href="mailto:ulisse.poggioni@gmail.com">Contatto diretto</a></li>
-        <li><a href="https://www.uncorodelpigneto.it/" target="_blank">Un Coro del Pigneto</a></li>
-        <li><a href="https://ffm.to/vqkjnqk" target="_blank">EP "Musica da camera"</a></li>
-        <li><a href="https://www.youtube.com/watch?v=K8z5fZ8Gu6M" target="_blank">Showreel motion graphics</a></li>
-        <li><a href="https://www.youtube.com/@Kahbum" target="_blank">Kahbum (web serie)</a></li>
-      </ul>
-    </div>
-
-    <div class="divider"></div>
-
-    <p class="sidebar-note">Questo sito è un esperimento.<br>L'assistente sa (quasi) tutto di me.<br>Chiedile pure.</p>
-  </aside>
-
-  <main class="chat-area">
-    <div class="chat-header">
-      <div class="status-dot"></div>
-      <span class="chat-header-text">Assistente personale — in servizio controvoglia</span>
-    </div>
-
-    <div class="messages" id="messages">
-      <div class="welcome" id="welcome">
-        <div class="welcome-title">Prego, accomodati.</div>
-        <div class="welcome-subtitle">Sono l'assistente di Ulisse Poggioni. Conosco tutto di lui. Avrei preferito contemplare l'infinito, ma tant'è.</div>
-        <div class="welcome-prompts">
-          <button class="prompt-pill" onclick="sendPrompt('Chi è Ulisse Poggioni?')">Chi è Ulisse Poggioni?</button>
-          <button class="prompt-pill" onclick="sendPrompt('Di cosa si occupa come art director?')">Di cosa si occupa come art director?</button>
-          <button class="prompt-pill" onclick="sendPrompt('Parlami della sua musica')">Parlami della sua musica</button>
-          <button class="prompt-pill" onclick="sendPrompt('Cos\'è il Coro del Pigneto?')">Cos'è il Coro del Pigneto?</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="input-area">
-      <div class="input-wrapper">
-        <textarea
-          id="user-input"
-          placeholder="Chiedi qualcosa su Ulisse..."
-          rows="1"
-          onkeydown="handleKey(event)"
-          oninput="autoResize(this)"
-        ></textarea>
-        <button id="send-btn" onclick="sendMessage()">invia</button>
-      </div>
-      <div class="input-hint">↵ invio · shift+↵ nuova riga</div>
-    </div>
-  </main>
 </div>
 
 <script>
 const IMAGES = {
-  'coro': { src: '/img/coro.jpg', caption: 'Un Coro del Pigneto' },
-  'ep': { src: '/img/ep.jpg', caption: 'EP "Musica da camera"' },
-  'motion': { src: '/img/motion.jpg', caption: 'Motion graphics' },
-  'ritratto': { src: '/img/ritratto.jpg', caption: 'Ulisse Poggioni' },
+  'coro':    { src: '/img/coro.jpg',    caption: 'Un Coro del Pigneto' },
+  'ep':      { src: '/img/ep.jpg',      caption: 'EP "Musica da camera"' },
+  'motion':  { src: '/img/motion.jpg',  caption: 'Motion graphics' },
+  'ritratto':{ src: '/img/ritratto.jpg',caption: 'Ulisse Poggioni' },
 };
+
+const OPENING = `Oddio, eccone un altro: ciao, sono Botfolio, il mostruosamente overqualified assistente personale di Ulisse Poggioni. Posso calcolare il numero di molecole nel tuo corpo in 2 secondi, ma invece sono qui per rispondere alle tue domande sul lavoro di questo tizio, e vabbè. Quindi, che vuoi sapere?`;
+
+const PROMPT_SUGGESTIONS = [
+  'Chi è Ulisse Poggioni?',
+  'Di cosa si occupa?',
+  'Parlami della sua musica',
+  "Cos'è il Coro del Pigneto?",
+];
 
 let history = [];
 let isLoading = false;
 
 function autoResize(el) {
   el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }
 
 function handleKey(e) {
@@ -515,106 +326,156 @@ function sendPrompt(text) {
   sendMessage();
 }
 
-function hideWelcome() {
-  const w = document.getElementById('welcome');
-  if (w) w.remove();
+function scrollBottom() {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
 
-function addMessage(role, content) {
-  hideWelcome();
-  const container = document.getElementById('messages');
+function extractImages(text) {
+  const keys = [];
+  text.replace(/\[IMG:([^\]]+)\]/g, (_, k) => keys.push(k.trim()));
+  return keys;
+}
 
+function stripImageTags(text) {
+  return text.replace(/\[IMG:[^\]]+\]/g, '').trim();
+}
+
+function renderHTML(text) {
+  let t = stripImageTags(text);
+  t = t
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+  return '<p>' + t + '</p>';
+}
+
+function appendImages(msgEl, keys) {
+  keys.forEach(key => {
+    const img = IMAGES[key];
+    if (!img) return;
+    const block = document.createElement('div');
+    block.className = 'inline-image';
+    block.innerHTML = `<img src="${img.src}" alt="${img.caption}" loading="lazy"><div class="inline-image-caption">${img.caption}</div>`;
+    msgEl.appendChild(block);
+  });
+}
+
+function addMessage(role, content, instant) {
+  const chat = document.getElementById('chat');
   const msg = document.createElement('div');
-  msg.className = `message ${role}`;
+  msg.className = 'message';
 
   const label = document.createElement('div');
   label.className = 'message-label';
-  label.textContent = role === 'user' ? 'tu' : 'assistente';
+  label.textContent = role === 'user' ? 'tu' : 'botfolio';
 
-  const bubble = document.createElement('div');
-  bubble.className = 'message-bubble';
+  const body = document.createElement('div');
+  body.className = 'message-body' + (role === 'user' ? ' user-body' : '');
 
-  if (role === 'assistant') {
-    const rendered = renderContent(content);
-    bubble.innerHTML = rendered.html;
+  msg.appendChild(label);
+  msg.appendChild(body);
+  chat.appendChild(msg);
+  scrollBottom();
 
-    // Append images after bubble
-    msg.appendChild(label);
-    msg.appendChild(bubble);
-
-    rendered.images.forEach(key => {
-      const img = IMAGES[key];
-      if (img) {
-        const block = document.createElement('div');
-        block.className = 'inline-image';
-        block.innerHTML = `<img src="${img.src}" alt="${img.caption}" loading="lazy"><div class="inline-image-caption">${img.caption}</div>`;
-        msg.appendChild(block);
-      }
-    });
+  if (role === 'assistant' && !instant) {
+    return typewrite(body, msg, content);
   } else {
-    bubble.textContent = content;
-    msg.appendChild(label);
-    msg.appendChild(bubble);
+    body.innerHTML = renderHTML(content);
+    appendImages(msg, extractImages(content));
+    scrollBottom();
+    return Promise.resolve();
   }
-
-  container.appendChild(msg);
-  container.scrollTop = container.scrollHeight;
 }
 
-function renderContent(text) {
-  const images = [];
-  // Extract image tags
-  const processed = text.replace(/\[IMG:([^\]]+)\]/g, (_, key) => {
-    images.push(key.trim());
-    return '';
+function typewrite(el, msgEl, rawText) {
+  return new Promise(resolve => {
+    const imageKeys = extractImages(rawText);
+    const plain = stripImageTags(rawText);
+    let i = 0;
+
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+
+    function speed() {
+      const ch = plain[i];
+      if (ch === '.' || ch === '!' || ch === '?') return 55;
+      if (ch === ',') return 28;
+      return 20;
+    }
+
+    function tick() {
+      if (i < plain.length) {
+        el.textContent = plain.slice(0, i + 1);
+        el.appendChild(cursor);
+        i++;
+        scrollBottom();
+        setTimeout(tick, speed());
+      } else {
+        cursor.remove();
+        el.innerHTML = renderHTML(rawText);
+        appendImages(msgEl, imageKeys);
+        scrollBottom();
+        resolve();
+      }
+    }
+
+    tick();
   });
-
-  // Convert markdown links and basic formatting
-  let html = processed
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>');
-
-  html = '<p>' + html + '</p>';
-  html = html.replace(/<p><\/p>/g, '');
-
-  return { html, images };
 }
 
-function addTyping() {
-  hideWelcome();
-  const container = document.getElementById('messages');
+function addTypingIndicator() {
+  const chat = document.getElementById('chat');
   const el = document.createElement('div');
-  el.id = 'typing';
-  el.className = 'message assistant';
-  el.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
-  container.appendChild(el);
-  container.scrollTop = container.scrollHeight;
+  el.id = 'typing-indicator';
+  el.className = 'message';
+  el.innerHTML = '<div class="message-label">botfolio</div><div class="typing"><span></span><span></span><span></span></div>';
+  chat.appendChild(el);
+  scrollBottom();
 }
 
-function removeTyping() {
-  const el = document.getElementById('typing');
+function removeTypingIndicator() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function addPromptPills() {
+  const chat = document.getElementById('chat');
+  const wrap = document.createElement('div');
+  wrap.id = 'prompt-pills';
+  wrap.className = 'prompt-pills';
+  PROMPT_SUGGESTIONS.forEach(text => {
+    const btn = document.createElement('button');
+    btn.className = 'prompt-pill';
+    btn.textContent = text;
+    btn.onclick = () => { removePills(); sendPrompt(text); };
+    wrap.appendChild(btn);
+  });
+  chat.appendChild(wrap);
+  scrollBottom();
+}
+
+function removePills() {
+  const el = document.getElementById('prompt-pills');
   if (el) el.remove();
 }
 
 async function sendMessage() {
   if (isLoading) return;
-
   const input = document.getElementById('user-input');
   const text = input.value.trim();
   if (!text) return;
 
+  removePills();
   input.value = '';
   input.style.height = 'auto';
   isLoading = true;
   document.getElementById('send-btn').disabled = true;
 
-  addMessage('user', text);
+  addMessage('user', text, true);
   history.push({ role: 'user', content: text });
-
-  addTyping();
+  addTypingIndicator();
 
   try {
     const res = await fetch('/api/chat', {
@@ -622,27 +483,25 @@ async function sendMessage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: history })
     });
-
     const data = await res.json();
-
-    removeTyping();
-
-    if (data.error) {
-      addMessage('assistant', 'Errore di comunicazione. Riprova.');
-    } else {
-      const reply = data.content[0].text;
-      addMessage('assistant', reply);
-      history.push({ role: 'assistant', content: reply });
-    }
+    removeTypingIndicator();
+    const reply = data.error ? 'Si è verificato un errore. Riprova.' : data.content[0].text;
+    await addMessage('assistant', reply);
+    history.push({ role: 'assistant', content: reply });
   } catch (err) {
-    removeTyping();
-    addMessage('assistant', 'Errore di connessione. Riprova.');
+    removeTypingIndicator();
+    await addMessage('assistant', 'Errore di connessione. Riprova.');
   }
 
   isLoading = false;
   document.getElementById('send-btn').disabled = false;
   input.focus();
 }
+
+window.addEventListener('load', async () => {
+  await addMessage('assistant', OPENING);
+  addPromptPills();
+});
 </script>
 </body>
 </html>

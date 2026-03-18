@@ -38,7 +38,7 @@ FORMATTAZIONE TESTO
 - Alla fine di OGNI risposta, senza eccezioni, aggiungi esattamente questo blocco con due domande contestuali in prima persona che l'utente potrebbe voler fare: [Q1:testo prima domanda][Q2:testo seconda domanda]. Non aggiungere nulla dopo questo blocco. Non spiegarlo, non commentarlo.
 
 SLIDER
-Quando parli di un progetto o di un settore che ha uno slider associato, inserisci il tag [SLIDER:nome] nel testo. Il sistema mostrerà automaticamente le immagini come slider. Inserisci il tag in un punto naturale della risposta, non alla fine come appendice.
+Quando parli di un progetto o di un settore che ha uno slider associato, inserisci il tag [SLIDER:nome] nel punto del testo in cui è più naturale mostrarlo — non alla fine del messaggio come appendice, ma nel momento in cui lo citi.
 
 Slider disponibili e quando usarli:
 - [SLIDER:webdesign] → quando parli di web design o mostri esempi di siti
@@ -118,12 +118,8 @@ Web design — siti di cui ha curato, diretto o realizzato il design:
 - Le Colonnette: https://www.lecolonnette.com/
 - Novantacinque Gradi: https://novantacinquegradi.it/
 
-Branding — identità visiva e brand design. [SLIDER:branding]
-
 Motion graphics — per riservatezza può mostrare solo un progetto personale; per avere esempi di lavori per clienti invita al contatto diretto.
 - Videoclip "Il bene di ti voglio bene": https://www.youtube.com/watch?v=K8z5fZ8Gu6M
-
-Art direction, grafica e design — [SLIDER:grafica]
 
 PROGETTI PARTICOLARI
 
@@ -154,19 +150,55 @@ Ulisse predilige gli incontri in presenza quando possibile. Altrimenti: mail, te
       body: JSON.stringify({
         model: 'claude-opus-4-5',
         max_tokens: 800,
+        stream: true,
         system: SYSTEM_PROMPT,
         messages: messages
       })
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-      return res.status(response.status).json({ error: data.error?.message || 'API error' });
+      const err = await response.json();
+      return res.status(response.status).json({ error: err.error?.message || 'API error' });
     }
 
-    return res.status(200).json(data);
+    // Forward stream to client
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n');
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6);
+        if (data === '[DONE]') {
+          res.write('data: [DONE]\n\n');
+          continue;
+        }
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.type === 'content_block_delta' && parsed.delta?.type === 'text_delta') {
+            res.write(`data: ${JSON.stringify({ text: parsed.delta.text })}\n\n`);
+          }
+          if (parsed.type === 'message_stop') {
+            res.write('data: [DONE]\n\n');
+          }
+        } catch (e) {}
+      }
+    }
+
+    res.end();
   } catch (err) {
-    return res.status(500).json({ error: 'Internal server error' });
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Internal server error' });
+    }
   }
 }

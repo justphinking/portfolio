@@ -588,11 +588,15 @@ function renderHTML(text) {
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/\[([^\]]+)\]\(mailto:([^)]+)\)/g, '<a href="mailto:$2" class="contact">$2</a>')
-    .replace(/\+39[\s\d]+/g, m => `<span class="contact">${m}</span>`)
-    .replace(/\[([^\]]+)\]\((https?:\/\/(?:www\.)?instagram\.com[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" class="contact">$1</a>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-    .replace(/(https?:\/\/(?:www\.)?instagram\.com\S+)/g, '<a href="$1" target="_blank" rel="noopener" class="contact">$1</a>')
-    .replace(/(https?:\/\/\S+)/g, (m, url) => m.startsWith('<') ? m : `<a href="${url}" target="_blank" rel="noopener">${url}</a>`)
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, (_, label, url) => {
+      const isContact = /instagram\.com|t\.me/.test(url);
+      return `<a href="${url}" target="_blank" rel="noopener"${isContact ? ' class="contact"' : ''}>${label}</a>`;
+    })
+    .replace(/(?<!href="|">)(https?:\/\/[^\s<"]+)/g, url => {
+      const isContact = /instagram\.com|t\.me/.test(url);
+      return `<a href="${url}" target="_blank" rel="noopener"${isContact ? ' class="contact"' : ''}>${url}</a>`;
+    })
+    .replace(/(\+39[\s\d]{8,})/g, '<span class="contact">$1</span>')
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br>');
   return '<p>' + t + '</p>';
@@ -774,7 +778,7 @@ async function streamAssistantMessage(reader) {
       if (el) msg.appendChild(el);
       maybeScroll();
     } else if (qMatch) {
-      questions.push(qMatch[1].trim());
+      questions.push(qMatch[2].trim());
     }
   }
 
@@ -815,21 +819,23 @@ async function streamAssistantMessage(reader) {
 
   await processBuffer(true);
 
-  // Re-render last text div cleanly
+  // Re-render last text div cleanly, stripping any leftover Q tags
+  const cleanChunk = currentChunk.replace(/\[Q\d:[^\]]+\]/g, '').trim();
   if (currentTextDiv) {
-    currentTextDiv.innerHTML = renderHTML(currentChunk);
+    currentTextDiv.innerHTML = renderHTML(cleanChunk);
   }
 
-  // Render suggestions after last text div
+  // Append suggestions
   if (questions.length > 0) {
     const sugg = buildSuggestions(questions);
     if (sugg) msg.appendChild(sugg);
+    maybeScroll();
   }
 
   window.removeEventListener('scroll', onScroll);
   maybeScroll();
 
-  return fullHistory;
+  return fullHistory.replace(/\[Q\d:[^\]]+\]/g, '').trim();
 }
 
 // ── Typing indicator ─────────────────────────────────────────────

@@ -5,20 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Ulisse Poggioni</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #1e1e1e;
-    --surface: #2a2a2a;
-    --border: #3d3d3d;
-    --text: #e8e4dc;
-    --text-user: #f0a0b8;
-    --text-dim: #888580;
-    --text-label: #666260;
-    --accent: #c8b890;
-    --mono: 'DM Mono', monospace;
+    --bg: #f5f0e8;
+    --surface: #ede8dc;
+    --border: #d4c8b0;
+    --border-strong: #a8bcc8;
+    --text: #2c2a24;
+    --text-user: #3a82b0;
+    --text-muted: #7a6e5e;
+    --text-dim: #b0a090;
+    --text-label: #c0b098;
+    --accent: #3a82b0;
+    --line-ai: #6a6458;
+    --link: #2a6a9a;
+    --serif: 'Playfair Display', serif;
+    --mono: 'Inconsolata', monospace;
   }
 
   html, body {
@@ -79,6 +84,10 @@
     gap: 10px;
   }
 
+  .message-header.user-header {
+    justify-content: flex-end;
+  }
+
   .message-avatar {
     width: 32px;
     height: 32px;
@@ -103,28 +112,39 @@
   }
 
   .message-body {
-    font-size: 13px;
-    line-height: 1.8;
+    font-size: 14px;
+    line-height: 1.6;
     color: var(--text);
+    border-left: 1px solid var(--line-ai);
+    padding-left: 14px;
   }
+
+  .message-body p { margin-bottom: 0.65em; }
+  .message-body p:last-child { margin-bottom: 0; }
 
   .message-body.user-body {
     color: var(--text-user);
+    border-left: none;
+    padding-left: 0;
+    border-right: 1px solid var(--accent);
+    padding-right: 14px;
+    text-align: right;
   }
 
   .message-body a {
-    color: #e6c84a;
+    color: var(--link);
     text-decoration: underline;
     text-underline-offset: 3px;
     transition: opacity 0.2s;
   }
 
   .message-body a:hover {
-    opacity: 0.75;
+    opacity: 0.7;
   }
 
   .kw {
-    color: #7ec98a;
+    font-weight: 700;
+    color: var(--text);
   }
 
 
@@ -384,10 +404,8 @@
 
   .input-wrapper {
     display: flex;
-    gap: 10px;
-    align-items: flex-end;
-    border: 1px solid var(--border);
-    padding: 10px 14px;
+    align-items: stretch;
+    border: 1px solid var(--border-strong);
     background: var(--surface);
     transition: border-color 0.2s;
   }
@@ -408,6 +426,7 @@
     resize: none;
     max-height: 120px;
     min-height: 20px;
+    padding: 10px 14px;
   }
 
   #user-input::placeholder {
@@ -416,12 +435,13 @@
 
   #send-btn {
     background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
+    border: none;
+    border-left: 1px solid var(--border);
+    color: var(--text-muted);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.06em;
-    padding: 5px 11px;
+    padding: 0 16px;
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
@@ -429,8 +449,8 @@
   }
 
   #send-btn:hover:not(:disabled) {
-    border-color: var(--accent);
-    color: var(--accent);
+    background: var(--border);
+    color: var(--text);
   }
 
   #send-btn:disabled {
@@ -453,11 +473,11 @@
 
   .prompt-pill {
     background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
     font-family: var(--mono);
-    font-size: 11px;
-    padding: 6px 14px;
+    font-size: 12px;
+    padding: 5px 14px;
     cursor: pointer;
     transition: all 0.2s;
     letter-spacing: 0.02em;
@@ -473,10 +493,10 @@
   .suggestion-pill {
     background: transparent;
     border: 1px solid var(--border);
-    color: var(--text-dim);
+    color: var(--text-muted);
     font-family: var(--mono);
-    font-size: 11px;
-    padding: 5px 12px;
+    font-size: 12px;
+    padding: 5px 13px;
     cursor: pointer;
     transition: all 0.2s;
     letter-spacing: 0.02em;
@@ -620,10 +640,10 @@ function renderHTML(text) {
   t = t.split('\n').map(line => line.startsWith('- ') ? '– ' + line.slice(2) : line).join('\n');
 
   t = t
-    .replace(/\[k\](.*?)\[\/k\]/g, '<span class="kw">$1</span>')
+    .replace(/\[k\](.*?)\[\/k\]/g, '<strong class="kw">$1</strong>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(mailto:([^)]+)\)/g, '$2')
+    .replace(/\[([^\]]+)\]\(mailto:([^)]+)\)/g, '<a href="mailto:$2">$2</a>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br>');
@@ -813,7 +833,7 @@ function addMessage(role, content, instant) {
   msg.className = 'message';
 
   const header = document.createElement('div');
-  header.className = 'message-header';
+  header.className = 'message-header' + (role === 'user' ? ' user-header' : '');
 
   if (role === 'assistant') {
     const avatarWrap = document.createElement('div');

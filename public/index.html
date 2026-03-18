@@ -778,14 +778,12 @@ async function streamAssistantMessage(reader) {
       if (el) msg.appendChild(el);
       maybeScroll();
     } else if (qMatch) {
-      console.log('Q tag found:', qMatch[2].trim());
       questions.push(qMatch[2].trim());
     }
   }
 
   function findMediaTag(text) {
-    const m = text.match(/^([\s\S]*?)(\[(?:IMG|SLIDER):[^\]]+\]|\[Q\d:[^\]]+\])([\s\S]*)$/);
-    if (m && m[2].startsWith('[Q')) console.log('findMediaTag Q:', m[2]);
+    const m = text.match(/^([\s\S]*?)(\[(?:IMG|SLIDER):[^\]]+\])([\s\S]*)$/);
     return m ? { before: m[1], tag: m[2], after: m[3] } : null;
   }
 
@@ -820,24 +818,26 @@ async function streamAssistantMessage(reader) {
       if (data === '[DONE]') break;
       try {
         const parsed = JSON.parse(data);
-        if (parsed.text) { buffer += parsed.text; if (parsed.text.includes('[Q')) console.log('chunk with Q:', JSON.stringify(parsed.text)); await processBuffer(false); }
+        if (parsed.text) { buffer += parsed.text; await processBuffer(false); }
       } catch(e) {}
     }
   }
 
   await processBuffer(true);
-  console.log('fullHistory end:', JSON.stringify(fullHistory.slice(-300)));
 
-  // Re-render last text div cleanly, stripping any leftover Q tags
+  // Extract Q tags from fullHistory (they always arrive at the end)
+  const qTags = [];
+  fullHistory.replace(/\[Q\d:([^\]]+)\]/g, (_, q) => qTags.push(q.trim()));
+
+  // Re-render last text div cleanly, stripping Q tags
   const cleanChunk = currentChunk.replace(/\[Q\d:[^\]]+\]/g, '').trim();
   if (currentTextDiv) {
     currentTextDiv.innerHTML = renderHTML(cleanChunk);
   }
 
   // Append suggestions
-  console.log('questions array:', questions);
-  if (questions.length > 0) {
-    const sugg = buildSuggestions(questions);
+  if (qTags.length > 0) {
+    const sugg = buildSuggestions(qTags);
     if (sugg) msg.appendChild(sugg);
     maybeScroll();
   }

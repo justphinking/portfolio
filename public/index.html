@@ -463,6 +463,31 @@
     letter-spacing: 0.02em;
   }
 
+  .suggestion-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .suggestion-pill {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+    text-align: left;
+  }
+
+  .suggestion-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
   .prompt-pill:hover {
     border-color: var(--accent);
     color: var(--accent);
@@ -568,6 +593,16 @@ function extractImages(text) {
   return keys;
 }
 
+function extractSuggestions(text) {
+  const qs = [];
+  text.replace(/\[Q(\d):([^\]]+)\]/g, (_, n, q) => qs.push(q.trim()));
+  return qs;
+}
+
+function stripSuggestionTags(text) {
+  return text.replace(/\[Q\d:[^\]]+\]/g, '').trim();
+}
+
 function extractSliders(text) {
   const keys = [];
   text.replace(/\[SLIDER:([^\]]+)\]/g, (_, k) => keys.push(k.trim()));
@@ -575,7 +610,7 @@ function extractSliders(text) {
 }
 
 function stripMediaTags(text) {
-  return text.replace(/\[IMG:[^\]]+\]/g, '').replace(/\[SLIDER:[^\]]+\]/g, '').trim();
+  return text.replace(/\[IMG:[^\]]+\]/g, '').replace(/\[SLIDER:[^\]]+\]/g, '').replace(/\[Q\d:[^\]]+\]/g, '').trim();
 }
 
 function renderHTML(text) {
@@ -612,6 +647,23 @@ async function appendSliders(msgEl, keys) {
   for (const key of keys) {
     await buildSlider(msgEl, key);
   }
+}
+
+function appendSuggestions(msgEl, questions) {
+  if (!questions || questions.length === 0) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'suggestion-pills';
+  questions.forEach(q => {
+    const btn = document.createElement('button');
+    btn.className = 'suggestion-pill';
+    btn.textContent = q;
+    btn.onclick = () => {
+      wrap.remove();
+      sendPrompt(q);
+    };
+    wrap.appendChild(btn);
+  });
+  msgEl.appendChild(wrap);
 }
 
 async function buildSlider(msgEl, name) {
@@ -789,6 +841,7 @@ function addMessage(role, content, instant) {
     body.innerHTML = renderHTML(content);
     appendImages(msg, extractImages(content));
     return appendSliders(msg, extractSliders(content)).then(() => {
+      appendSuggestions(msg, extractSuggestions(content));
       scrollBottom();
     });
   }
@@ -837,6 +890,7 @@ function typewrite(el, msgEl, rawText) {
         el.innerHTML = renderHTML(rawText);
         appendImages(msgEl, imageKeys);
         appendSliders(msgEl, sliderKeys).then(() => {
+          appendSuggestions(msgEl, extractSuggestions(rawText));
           scrollBottom();
           resolve();
         });

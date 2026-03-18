@@ -820,12 +820,13 @@ async function streamAssistantMessage(reader) {
       if (data === '[DONE]') break;
       try {
         const parsed = JSON.parse(data);
-        if (parsed.text) { buffer += parsed.text; await processBuffer(false); }
+        if (parsed.text) { buffer += parsed.text; if (parsed.text.includes('[Q')) console.log('chunk with Q:', JSON.stringify(parsed.text)); await processBuffer(false); }
       } catch(e) {}
     }
   }
 
   await processBuffer(true);
+  console.log('fullHistory end:', JSON.stringify(fullHistory.slice(-300)));
 
   // Re-render last text div cleanly, stripping any leftover Q tags
   const cleanChunk = currentChunk.replace(/\[Q\d:[^\]]+\]/g, '').trim();

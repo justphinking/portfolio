@@ -791,8 +791,14 @@ async function streamAssistantMessage(reader) {
     while (true) {
       const found = findMediaTag(buffer);
       if (!found) {
-        const safe = isFinal ? buffer : buffer.slice(0, -20);
-        if (safe) { buffer = buffer.slice(safe.length); flushTextChunk(safe); }
+        if (isFinal) {
+          // flush all remaining, including any trailing text after last tag
+          if (buffer) { flushTextChunk(buffer); buffer = ''; }
+        } else {
+          // hold last 20 chars in case a tag is still arriving
+          const safe = buffer.slice(0, -20);
+          if (safe) { buffer = buffer.slice(safe.length); flushTextChunk(safe); }
+        }
         break;
       }
       flushTextChunk(found.before);

@@ -132,7 +132,7 @@
   }
 
   .message-body a {
-    color: var(--link);
+    color: #4a9a5a;
     text-decoration: underline;
     text-underline-offset: 3px;
     transition: opacity 0.2s;
@@ -140,6 +140,10 @@
 
   .message-body a:hover {
     opacity: 0.7;
+  }
+
+  .message-body a.contact {
+    color: #d0607a;
   }
 
   .kw {
@@ -583,8 +587,12 @@ function renderHTML(text) {
     .replace(/\[k\](.*?)\[\/k\]/g, '<strong class="kw">$1</strong>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(mailto:([^)]+)\)/g, '<a href="mailto:$2">$2</a>')
+    .replace(/\[([^\]]+)\]\(mailto:([^)]+)\)/g, '<a href="mailto:$2" class="contact">$2</a>')
+    .replace(/\+39[\s\d]+/g, m => `<span class="contact">${m}</span>`)
+    .replace(/\[([^\]]+)\]\((https?:\/\/(?:www\.)?instagram\.com[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" class="contact">$1</a>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/(https?:\/\/(?:www\.)?instagram\.com\S+)/g, '<a href="$1" target="_blank" rel="noopener" class="contact">$1</a>')
+    .replace(/(https?:\/\/\S+)/g, (m, url) => m.startsWith('<') ? m : `<a href="${url}" target="_blank" rel="noopener">${url}</a>`)
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br>');
   return '<p>' + t + '</p>';
@@ -716,7 +724,8 @@ async function streamAssistantMessage(reader) {
 
   let buffer = '';
   let currentTextDiv = null;  // the active text div being streamed into
-  let accumulatedText = '';   // full plain text for history
+  let currentChunk = '';      // text for the current active div only
+  let fullHistory = '';       // complete text for history (all chunks)
   let questions = [];
   let userScrolled = false;
 
@@ -740,9 +749,10 @@ async function streamAssistantMessage(reader) {
 
   function flushTextChunk(text) {
     if (!text) return;
-    accumulatedText += text;
+    currentChunk += text;
+    fullHistory += text;
     const div = getOrCreateTextDiv();
-    div.innerHTML = renderHTML(accumulatedText);
+    div.innerHTML = renderHTML(currentChunk);
     maybeScroll();
   }
 
@@ -752,12 +762,14 @@ async function streamAssistantMessage(reader) {
     const qMatch = tag.match(/^\[Q\d:([^\]]+)\]$/);
 
     if (imgMatch) {
-      currentTextDiv = null; // next text goes into a new div after the image
+      currentTextDiv = null;
+      currentChunk = '';
       const el = buildInlineImage(imgMatch[1].trim());
       if (el) msg.appendChild(el);
       maybeScroll();
     } else if (sliderMatch) {
       currentTextDiv = null;
+      currentChunk = '';
       const el = await buildSlider(sliderMatch[1].trim());
       if (el) msg.appendChild(el);
       maybeScroll();
@@ -803,18 +815,21 @@ async function streamAssistantMessage(reader) {
 
   await processBuffer(true);
 
-  // Re-render last text div cleanly (removes any leftover partial tags)
+  // Re-render last text div cleanly
   if (currentTextDiv) {
-    currentTextDiv.innerHTML = renderHTML(accumulatedText);
+    currentTextDiv.innerHTML = renderHTML(currentChunk);
   }
 
-  const sugg = buildSuggestions(questions);
-  if (sugg) msg.appendChild(sugg);
+  // Render suggestions after last text div
+  if (questions.length > 0) {
+    const sugg = buildSuggestions(questions);
+    if (sugg) msg.appendChild(sugg);
+  }
 
   window.removeEventListener('scroll', onScroll);
   maybeScroll();
 
-  return accumulatedText;
+  return fullHistory;
 }
 
 // ── Typing indicator ─────────────────────────────────────────────

@@ -707,75 +707,84 @@ function addUserMessage(text) {
 // Processes text chunk by chunk, flushing inline media tags as they appear.
 
 async function streamAssistantMessage(reader) {
-  const { msg, body } = createMessageShell('assistant');
+  // Instead of a single body div, we append text nodes and media nodes
+  // in sequence directly into msg, so position is always correct.
+  const { msg } = createMessageShell('assistant');
+  // Remove the empty body div createMessageShell added — we manage nodes ourselves
+  const emptyBody = msg.querySelector('.message-body');
+  if (emptyBody) emptyBody.remove();
 
-  let buffer = '';          // raw accumulated text
-  let rendered = '';        // text already flushed to DOM (minus active media tags)
+  let buffer = '';
+  let currentTextDiv = null;  // the active text div being streamed into
+  let accumulatedText = '';   // full plain text for history
+  let questions = [];
   let userScrolled = false;
 
-  // Detect manual scroll
   const onScroll = () => {
     const fromBottom = document.body.scrollHeight - window.scrollY - window.innerHeight;
-    if (fromBottom > 80) userScrolled = true;
-    else userScrolled = false;
+    userScrolled = fromBottom > 80;
   };
   window.addEventListener('scroll', onScroll, { passive: true });
-
   function maybeScroll() {
     if (!userScrolled) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
 
-  // Split buffer at the first complete media tag found; return [before, tag, after] or null
+  function getOrCreateTextDiv() {
+    if (!currentTextDiv) {
+      currentTextDiv = document.createElement('div');
+      currentTextDiv.className = 'message-body';
+      msg.appendChild(currentTextDiv);
+    }
+    return currentTextDiv;
+  }
+
+  function flushTextChunk(text) {
+    if (!text) return;
+    accumulatedText += text;
+    const div = getOrCreateTextDiv();
+    div.innerHTML = renderHTML(accumulatedText);
+    maybeScroll();
+  }
+
+  async function handleTag(tag) {
+    const imgMatch = tag.match(/^\[IMG:([^\]]+)\]$/);
+    const sliderMatch = tag.match(/^\[SLIDER:([^\]]+)\]$/);
+    const qMatch = tag.match(/^\[Q\d:([^\]]+)\]$/);
+
+    if (imgMatch) {
+      currentTextDiv = null; // next text goes into a new div after the image
+      const el = buildInlineImage(imgMatch[1].trim());
+      if (el) msg.appendChild(el);
+      maybeScroll();
+    } else if (sliderMatch) {
+      currentTextDiv = null;
+      const el = await buildSlider(sliderMatch[1].trim());
+      if (el) msg.appendChild(el);
+      maybeScroll();
+    } else if (qMatch) {
+      questions.push(qMatch[1].trim());
+    }
+  }
+
   function findMediaTag(text) {
     const m = text.match(/^([\s\S]*?)(\[(?:IMG|SLIDER):[^\]]+\]|\[Q\d:[^\]]+\])([\s\S]*)$/);
     return m ? { before: m[1], tag: m[2], after: m[3] } : null;
   }
 
-  // Flush plain text to body
-  function flushText(text) {
-    if (!text) return;
-    body.innerHTML = renderHTML(text);
-    maybeScroll();
-  }
-
-  // Handle a complete tag inline
-  async function handleTag(tag) {
-    const imgMatch = tag.match(/^\[IMG:([^\]]+)\]$/);
-    const sliderMatch = tag.match(/^\[SLIDER:([^\]]+)\]$/);
-    const qMatch = tag.match(/^\[Q(\d):([^\]]+)\]$/);
-
-    if (imgMatch) {
-      const el = buildInlineImage(imgMatch[1].trim());
-      if (el) msg.appendChild(el);
-      maybeScroll();
-    } else if (sliderMatch) {
-      const el = await buildSlider(sliderMatch[1].trim());
-      if (el) msg.appendChild(el);
-      maybeScroll();
-    } else if (qMatch) {
-      // collect all Q tags from remaining buffer
-    }
-  }
-
-  // Process buffer: flush text up to first media tag, handle tag, repeat
   async function processBuffer(isFinal) {
     while (true) {
       const found = findMediaTag(buffer);
       if (!found) {
-        // No complete tag — if final, flush everything; else hold last ~20 chars in case a tag is mid-arrival
         const safe = isFinal ? buffer : buffer.slice(0, -20);
-        if (safe) { rendered += safe; buffer = buffer.slice(safe.length); flushText(rendered); }
+        if (safe) { buffer = buffer.slice(safe.length); flushTextChunk(safe); }
         break;
       }
-      // Flush text before the tag
-      rendered += found.before;
+      flushTextChunk(found.before);
       buffer = found.after;
-      flushText(rendered);
       await handleTag(found.tag);
     }
   }
 
-  // Read stream
   const decoder = new TextDecoder();
   while (true) {
     const { done, value } = await reader.read();
@@ -792,15 +801,12 @@ async function streamAssistantMessage(reader) {
     }
   }
 
-  // Final flush
   await processBuffer(true);
 
-  // Extract and render Q suggestions from full buffer remainder + rendered
-  const fullText = rendered + buffer;
-  const questions = [];
-  fullText.replace(/\[Q\d:([^\]]+)\]/g, (_, q) => questions.push(q.trim()));
-  // Remove Q tags from displayed text
-  body.innerHTML = renderHTML(fullText.replace(/\[Q\d:[^\]]+\]/g, '').trim());
+  // Re-render last text div cleanly (removes any leftover partial tags)
+  if (currentTextDiv) {
+    currentTextDiv.innerHTML = renderHTML(accumulatedText);
+  }
 
   const sugg = buildSuggestions(questions);
   if (sugg) msg.appendChild(sugg);
@@ -808,7 +814,7 @@ async function streamAssistantMessage(reader) {
   window.removeEventListener('scroll', onScroll);
   maybeScroll();
 
-  return fullText.replace(/\[Q\d:[^\]]+\]/g, '').replace(/\[IMG:[^\]]+\]/g, '').replace(/\[SLIDER:[^\]]+\]/g, '').trim();
+  return accumulatedText;
 }
 
 // ── Typing indicator ─────────────────────────────────────────────

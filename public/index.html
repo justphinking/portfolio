@@ -139,6 +139,91 @@
     padding-left: 4px;
   }
 
+
+  /* Slider */
+  .slider-block {
+    margin-top: 14px;
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+  }
+
+  .slider-track {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    aspect-ratio: 4 / 3;
+    background: var(--surface);
+  }
+
+  .slider-track img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    cursor: zoom-in;
+  }
+
+  .slider-track img.active {
+    opacity: 1;
+  }
+
+  .slider-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 2px 0;
+  }
+
+  .slider-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .slider-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .slider-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .slider-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .slider-dot.active {
+    background: var(--accent);
+  }
+
+  .slider-counter {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+
   /* Inline image */
   .inline-image {
     margin-top: 12px;
@@ -456,12 +541,18 @@ function extractImages(text) {
   return keys;
 }
 
-function stripImageTags(text) {
-  return text.replace(/\[IMG:[^\]]+\]/g, '').trim();
+function extractSliders(text) {
+  const keys = [];
+  text.replace(/\[SLIDER:([^\]]+)\]/g, (_, k) => keys.push(k.trim()));
+  return keys;
+}
+
+function stripMediaTags(text) {
+  return text.replace(/\[IMG:[^\]]+\]/g, '').replace(/\[SLIDER:[^\]]+\]/g, '').trim();
 }
 
 function renderHTML(text) {
-  let t = stripImageTags(text);
+  let t = stripMediaTags(text);
 
   // Convert bullet list blocks (lines starting with -)
   const lines = t.split('\n');
@@ -500,6 +591,94 @@ function appendImages(msgEl, keys) {
     block.addEventListener('click', () => openLightbox(img.src));
     msgEl.appendChild(block);
   });
+}
+
+async function appendSliders(msgEl, keys) {
+  for (const key of keys) {
+    await buildSlider(msgEl, key);
+  }
+}
+
+async function buildSlider(msgEl, name) {
+  // Fetch list of images from the slider folder via a known naming convention
+  // We try p1.jpg, p2.jpg... up to 20, stopping at first 404
+  const srcs = [];
+  const exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+  for (let i = 1; i <= 20; i++) {
+    let found = false;
+    for (const ext of exts) {
+      const src = `/img/${name}/${i}.${ext}`;
+      try {
+        const r = await fetch(src, { method: 'HEAD' });
+        if (r.ok) { srcs.push(src); found = true; break; }
+      } catch(e) {}
+    }
+    if (!found) break;
+  }
+  if (srcs.length === 0) return;
+
+  const block = document.createElement('div');
+  block.className = 'slider-block';
+
+  const track = document.createElement('div');
+  track.className = 'slider-track';
+
+  srcs.forEach((src, idx) => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.loading = 'lazy';
+    if (idx === 0) img.classList.add('active');
+    img.addEventListener('click', () => openLightbox(src));
+    track.appendChild(img);
+  });
+
+  let current = 0;
+  const imgs = track.querySelectorAll('img');
+
+  function goTo(n) {
+    imgs[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (n + srcs.length) % srcs.length;
+    imgs[current].classList.add('active');
+    dots[current].classList.add('active');
+    counter.textContent = (current + 1) + ' / ' + srcs.length;
+  }
+
+  const controls = document.createElement('div');
+  controls.className = 'slider-controls';
+
+  const prev = document.createElement('button');
+  prev.className = 'slider-btn';
+  prev.textContent = '←';
+  prev.addEventListener('click', () => goTo(current - 1));
+
+  const dotsWrap = document.createElement('div');
+  dotsWrap.className = 'slider-dots';
+  const dots = srcs.map((_, idx) => {
+    const d = document.createElement('div');
+    d.className = 'slider-dot' + (idx === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(idx));
+    dotsWrap.appendChild(d);
+    return d;
+  });
+
+  const counter = document.createElement('div');
+  counter.className = 'slider-counter';
+  counter.textContent = '1 / ' + srcs.length;
+
+  const next = document.createElement('button');
+  next.className = 'slider-btn';
+  next.textContent = '→';
+  next.addEventListener('click', () => goTo(current + 1));
+
+  controls.appendChild(prev);
+  controls.appendChild(dotsWrap);
+  controls.appendChild(counter);
+  controls.appendChild(next);
+
+  block.appendChild(track);
+  block.appendChild(controls);
+  msgEl.appendChild(block);
 }
 
 function openLightbox(src) {
@@ -548,14 +727,16 @@ function addMessage(role, content, instant) {
   } else {
     body.innerHTML = renderHTML(content);
     appendImages(msg, extractImages(content));
-    scrollBottom();
-    return Promise.resolve();
+    return appendSliders(msg, extractSliders(content)).then(() => {
+      scrollBottom();
+    });
   }
 }
 
 function typewrite(el, msgEl, rawText) {
   return new Promise(resolve => {
     const imageKeys = extractImages(rawText);
+    const sliderKeys = extractSliders(rawText);
 
     el.innerHTML = renderHTML(rawText);
 
@@ -594,8 +775,10 @@ function typewrite(el, msgEl, rawText) {
       } else {
         el.innerHTML = renderHTML(rawText);
         appendImages(msgEl, imageKeys);
-        scrollBottom();
-        resolve();
+        appendSliders(msgEl, sliderKeys).then(() => {
+          scrollBottom();
+          resolve();
+        });
       }
     }
 

@@ -127,24 +127,13 @@
     color: #7ec98a;
   }
 
-  .message-body ul {
-    margin: 8px 0 8px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
 
-  .message-body li {
-    list-style: disc;
-    padding-left: 4px;
-  }
 
 
   /* Slider */
   .slider-block {
     margin-top: 14px;
     width: 100%;
-    max-width: 480px;
     position: relative;
   }
 
@@ -260,7 +249,6 @@
     z-index: 1000;
     align-items: center;
     justify-content: center;
-    cursor: zoom-out;
   }
 
   .lightbox.open {
@@ -268,11 +256,47 @@
   }
 
   .lightbox img {
-    max-width: 92vw;
-    max-height: 92vh;
+    max-width: 82vw;
+    max-height: 88vh;
     object-fit: contain;
     border: 1px solid var(--border);
   }
+
+  .lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 1001;
+  }
+
+  .lightbox-nav:hover { border-color: var(--accent); color: var(--accent); }
+  #lb-prev { left: 20px; }
+  #lb-next { right: 20px; }
+
+  .lightbox-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 1001;
+  }
+
+  .lightbox-close:hover { border-color: var(--accent); color: var(--accent); }
 
   /* Cursor */
   .cursor {
@@ -452,8 +476,11 @@
 </head>
 <body>
 
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-nav" id="lb-prev">&#8592;</button>
   <img id="lightbox-img" src="" alt="">
+  <button class="lightbox-nav" id="lb-next">&#8594;</button>
+  <button class="lightbox-close" id="lb-close">&#x2715;</button>
 </div>
 
 <div class="page">
@@ -554,26 +581,14 @@ function stripMediaTags(text) {
 function renderHTML(text) {
   let t = stripMediaTags(text);
 
-  // Convert bullet list blocks (lines starting with -)
-  const lines = t.split('\n');
-  const out = [];
-  let inList = false;
-  for (const line of lines) {
-    if (line.startsWith('- ')) {
-      if (!inList) { out.push('<ul>'); inList = true; }
-      out.push('<li>' + line.slice(2) + '</li>');
-    } else {
-      if (inList) { out.push('</ul>'); inList = false; }
-      out.push(line);
-    }
-  }
-  if (inList) out.push('</ul>');
-  t = out.join('\n');
+  // Convert bullet lines "- item" to plain "– item"
+  t = t.split('\n').map(line => line.startsWith('- ') ? '– ' + line.slice(2) : line).join('\n');
 
   t = t
     .replace(/\[k\](.*?)\[\/k\]/g, '<span class="kw">$1</span>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\(mailto:([^)]+)\)/g, '$2')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br>');
@@ -588,7 +603,7 @@ function appendImages(msgEl, keys) {
     const block = document.createElement('div');
     block.className = 'inline-image';
     block.innerHTML = `<img src="${img.src}" alt="${img.caption}" loading="lazy"><div class="inline-image-caption">${img.caption}</div>`;
-    block.addEventListener('click', () => openLightbox(img.src));
+    block.addEventListener('click', () => openLightbox(img.src, [img.src]));
     msgEl.appendChild(block);
   });
 }
@@ -628,7 +643,7 @@ async function buildSlider(msgEl, name) {
     img.src = src;
     img.loading = 'lazy';
     if (idx === 0) img.classList.add('active');
-    img.addEventListener('click', () => openLightbox(src));
+    img.addEventListener('click', () => openLightbox(src, srcs));
     track.appendChild(img);
   });
 
@@ -681,17 +696,63 @@ async function buildSlider(msgEl, name) {
   msgEl.appendChild(block);
 }
 
-function openLightbox(src) {
-  document.getElementById('lightbox-img').src = src;
+let lbImages = [];
+let lbIndex = 0;
+
+function openLightbox(src, images) {
+  lbImages = images && images.length > 0 ? images : [src];
+  lbIndex = lbImages.indexOf(src);
+  if (lbIndex < 0) lbIndex = 0;
+  updateLightbox();
   document.getElementById('lightbox').classList.add('open');
+  const hasMult = lbImages.length > 1;
+  document.getElementById('lb-prev').style.display = hasMult ? 'block' : 'none';
+  document.getElementById('lb-next').style.display = hasMult ? 'block' : 'none';
+}
+
+function updateLightbox() {
+  document.getElementById('lightbox-img').src = lbImages[lbIndex];
 }
 
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
 }
 
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-prev').addEventListener('click', e => {
+  e.stopPropagation();
+  lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length;
+  updateLightbox();
+});
+document.getElementById('lb-next').addEventListener('click', e => {
+  e.stopPropagation();
+  lbIndex = (lbIndex + 1) % lbImages.length;
+  updateLightbox();
+});
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === document.getElementById('lightbox') || e.target === document.getElementById('lightbox-img')) {
+    closeLightbox();
+  }
+});
+
+// Swipe support
+(function() {
+  let startX = 0;
+  const lb = document.getElementById('lightbox');
+  lb.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) < 40) return;
+    if (dx < 0) { lbIndex = (lbIndex + 1) % lbImages.length; }
+    else { lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length; }
+    updateLightbox();
+  }, { passive: true });
+})();
 document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
   if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') { lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length; updateLightbox(); }
+  if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % lbImages.length; updateLightbox(); }
 });
 
 function addMessage(role, content, instant) {

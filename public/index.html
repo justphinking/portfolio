@@ -778,12 +778,14 @@ async function streamAssistantMessage(reader) {
       if (el) msg.appendChild(el);
       maybeScroll();
     } else if (qMatch) {
+      console.log('Q tag found:', qMatch[2].trim());
       questions.push(qMatch[2].trim());
     }
   }
 
   function findMediaTag(text) {
     const m = text.match(/^([\s\S]*?)(\[(?:IMG|SLIDER):[^\]]+\]|\[Q\d:[^\]]+\])([\s\S]*)$/);
+    if (m && m[2].startsWith('[Q')) console.log('findMediaTag Q:', m[2]);
     return m ? { before: m[1], tag: m[2], after: m[3] } : null;
   }
 
@@ -832,6 +834,7 @@ async function streamAssistantMessage(reader) {
   }
 
   // Append suggestions
+  console.log('questions array:', questions);
   if (questions.length > 0) {
     const sugg = buildSuggestions(questions);
     if (sugg) msg.appendChild(sugg);

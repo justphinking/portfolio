@@ -10,17 +10,17 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #f5f0e8;
-    --surface: #ede8dc;
-    --border: #d4c8b0;
-    --border-strong: #a8bcc8;
-    --text: #2c2a24;
-    --text-user: #3a82b0;
-    --text-muted: #7a6e5e;
-    --text-dim: #b0a090;
-    --text-label: #c0b098;
-    --accent: #3a82b0;
-    --line-ai: #6a6458;
+    --bg: #313131;
+    --surface: #3a3a3a;
+    --border: #4a4a4a;
+    --border-strong: #6a8fa8;
+    --text: #e8e4dc;
+    --text-user: #7ab8d8;
+    --text-muted: #a89e90;
+    --text-dim: #686460;
+    --text-label: #585450;
+    --accent: #7ab8d8;
+    --line-ai: #585450;
     --link: #2a6a9a;
     --serif: 'Playfair Display', serif;
     --mono: 'Inconsolata', monospace;
@@ -50,6 +50,7 @@
     aspect-ratio: 4 / 3;
     overflow: hidden;
     border: 1px solid var(--border);
+    background: var(--surface);
   }
 
   .header-img img {
@@ -132,7 +133,7 @@
   }
 
   .message-body a {
-    color: #4a9a5a;
+    color: #6abf7a;
     text-decoration: underline;
     text-underline-offset: 3px;
     transition: opacity 0.2s;
@@ -143,12 +144,16 @@
   }
 
   .message-body a.contact {
-    color: #d0607a;
+    color: #e87898;
+  }
+
+  .contact {
+    color: #e87898;
   }
 
   .kw {
     font-weight: 700;
-    color: var(--text);
+    color: #e8e4dc;
   }
 
 
@@ -534,9 +539,7 @@
 
 <div class="page">
 
-  <div class="header-img">
-    <img src="/img/header.jpg" alt="Ulisse Poggioni">
-  </div>
+  <div class="header-img" id="lottie-header"></div>
 
   <div class="chat" id="chat"></div>
 
@@ -558,6 +561,7 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 <script>
 const IMAGES = {
   'coro':    { src: '/img/coro.jpg',    caption: 'Un Coro del Pigneto' },
@@ -983,6 +987,19 @@ async function sendMessage() {
 // ── Init ─────────────────────────────────────────────────────────
 
 window.addEventListener('load', () => {
+  // Init Lottie header
+  if (typeof lottie !== 'undefined') {
+    lottie.loadAnimation({
+      container: document.getElementById('lottie-header'),
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: '/img/header/header_1.json',
+      rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice'
+      }
+    });
+  }
   addOpeningMessage(OPENING);
   addPromptPills();
 });

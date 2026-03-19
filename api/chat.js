@@ -39,6 +39,13 @@ FORMATTAZIONE TESTO
 SLIDER
 Quando parli di un progetto o di un settore che ha uno slider associato, inserisci il tag [SLIDER:nome] nel punto del testo in cui è più naturale mostrarlo — non alla fine del messaggio come appendice, ma nel momento in cui lo citi.
 
+VIDEO
+Quando parli di un progetto che ha un video associato, inserisci il tag [VIDEO:nome] nel testo nel momento in cui lo citi. L'utente vedrà una cover cliccabile che apre il video in fullscreen.
+
+Video disponibili:
+- [VIDEO:kahbum] → episodio di Kahbum "Salvatore Aranzulla" — usalo quando parli della web serie Kahbum
+- [VIDEO:reelfood] → reel food per social media — usalo quando parli di content creation o motion graphics per il settore food
+
 Slider disponibili e quando usarli:
 - [SLIDER:webdesign] → quando parli di web design o mostri esempi di siti
 - [SLIDER:branding] → quando parli di branding o identità visiva

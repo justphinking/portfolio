@@ -243,6 +243,79 @@
     border-top: 1px solid var(--border);
   }
 
+  /* Video cover */
+  .video-cover {
+    margin-top: 12px;
+    display: inline-block;
+    max-width: 360px;
+    width: 100%;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .video-cover img {
+    width: 100%;
+    display: block;
+    transition: opacity 0.2s;
+  }
+
+  .video-cover:hover img { opacity: 0.8; }
+
+  .video-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    border: 2px solid rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: background 0.2s;
+  }
+
+  .video-cover:hover .video-play-btn { background: rgba(0,0,0,0.85); }
+
+  .video-play-btn::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 0 10px 18px;
+    border-color: transparent transparent transparent rgba(255,255,255,0.95);
+    margin-left: 4px;
+  }
+
+  .video-caption {
+    padding: 6px 10px;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  /* Video lightbox */
+  .lightbox-video {
+    position: relative;
+    width: 90vw;
+    max-width: 960px;
+    aspect-ratio: 16 / 9;
+  }
+
+  .lightbox-video iframe,
+  .lightbox-video video {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
   /* Lightbox */
   .lightbox {
     display: none;
@@ -430,6 +503,7 @@
 <div class="lightbox" id="lightbox">
   <button class="lightbox-nav" id="lb-prev">&#8592;</button>
   <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-video" id="lightbox-video" style="display:none"></div>
   <button class="lightbox-nav" id="lb-next">&#8594;</button>
   <button class="lightbox-close" id="lb-close">&#x2715;</button>
 </div>
@@ -465,6 +539,11 @@ const IMAGES = {
   'ep':      { src: '/img/ep.jpg',      caption: 'EP "Musica da camera"' },
   'motion':  { src: '/img/motion.jpg',  caption: 'Motion graphics' },
   'ritratto':{ src: '/img/ritratto.jpg',caption: 'Ulisse Poggioni' },
+};
+
+const VIDEOS = {
+  'kahbum':   { cover: '/img/video/kahbum.jpg',   type: 'youtube', src: 'NFTqS3Pp4Ck', caption: 'Kahbum — Salvatore Aranzulla' },
+  'reelfood': { cover: '/img/video/reelfood.jpg', type: 'mp4',     src: '/video/reelfood.mp4', caption: 'Reel food — content creation' },
 };
 
 const PROFILE_IMG = '/img/profilo.jpg';
@@ -512,6 +591,12 @@ function renderHTML(text) {
   return '<p>' + t + '</p>';
 }
 
+function extractVideos(text) {
+  const keys = [];
+  text.replace(/\[VIDEO:([^\]]+)\]/g, (_, k) => keys.push(k.trim()));
+  return keys;
+}
+
 function buildInlineImage(key) {
   const img = IMAGES[key];
   if (!img) return null;
@@ -520,6 +605,29 @@ function buildInlineImage(key) {
   block.innerHTML = `<img src="${img.src}" alt="${img.caption}" loading="lazy"><div class="inline-image-caption">${img.caption}</div>`;
   block.addEventListener('click', () => openLightbox(img.src, [img.src]));
   return block;
+}
+
+function buildVideoBlock(key) {
+  const v = VIDEOS[key];
+  if (!v) return null;
+  const wrap = document.createElement('div');
+  wrap.className = 'video-cover';
+  const img = document.createElement('img');
+  img.src = v.cover;
+  img.alt = v.caption;
+  img.loading = 'lazy';
+  const btn = document.createElement('div');
+  btn.className = 'video-play-btn';
+  const cap = document.createElement('div');
+  cap.className = 'video-caption';
+  cap.textContent = v.caption;
+  const border = document.createElement('div');
+  border.style.cssText = 'border: 1px solid var(--border); display: inline-block; width: 100%;';
+  border.append(wrap);
+  wrap.append(img, btn);
+  border.append(cap);
+  wrap.addEventListener('click', () => openVideoLightbox(v));
+  return border;
 }
 
 async function buildSlider(name) {
@@ -681,6 +789,7 @@ async function streamAssistantMessage(reader) {
   async function handleTag(tag) {
     const imgMatch = tag.match(/^\[IMG:([^\]]+)\]$/);
     const sliderMatch = tag.match(/^\[SLIDER:([^\]]+)\]$/);
+    const videoMatch = tag.match(/^\[VIDEO:([^\]]+)\]$/);
     if (imgMatch) {
       currentTextDiv = null;
       currentChunk = '';
@@ -693,12 +802,18 @@ async function streamAssistantMessage(reader) {
       const el = await buildSlider(sliderMatch[1].trim());
       if (el) msg.appendChild(el);
       maybeScroll();
+    } else if (videoMatch) {
+      currentTextDiv = null;
+      currentChunk = '';
+      const el = buildVideoBlock(videoMatch[1].trim());
+      if (el) msg.appendChild(el);
+      maybeScroll();
     }
     // Q tags are extracted from fullHistory at the end — not handled here
   }
 
   function findMediaTag(text) {
-    const m = text.match(/^([\s\S]*?)(\[(?:IMG|SLIDER):[^\]]+\])([\s\S]*)$/);
+    const m = text.match(/^([\s\S]*?)(\[(?:IMG|SLIDER|VIDEO):[^\]]+\])([\s\S]*)$/);
     return m ? { before: m[1], tag: m[2], after: m[3] } : null;
   }
 
@@ -824,11 +939,31 @@ let lbImages = [], lbIndex = 0;
 function openLightbox(src, images) {
   lbImages = images && images.length > 0 ? images : [src];
   lbIndex = Math.max(0, lbImages.indexOf(src));
+  const imgEl = document.getElementById('lightbox-img');
+  const vidEl = document.getElementById('lightbox-video');
+  imgEl.style.display = 'block';
+  vidEl.style.display = 'none';
+  vidEl.innerHTML = '';
   updateLightbox();
   document.getElementById('lightbox').classList.add('open');
   const mult = lbImages.length > 1;
   document.getElementById('lb-prev').style.display = mult ? 'block' : 'none';
   document.getElementById('lb-next').style.display = mult ? 'block' : 'none';
+}
+
+function openVideoLightbox(v) {
+  const imgEl = document.getElementById('lightbox-img');
+  const vidEl = document.getElementById('lightbox-video');
+  imgEl.style.display = 'none';
+  vidEl.style.display = 'block';
+  document.getElementById('lb-prev').style.display = 'none';
+  document.getElementById('lb-next').style.display = 'none';
+  if (v.type === 'youtube') {
+    vidEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${v.src}?autoplay=1&rel=0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+  } else if (v.type === 'mp4') {
+    vidEl.innerHTML = `<video src="${v.src}" autoplay controls playsinline></video>`;
+  }
+  document.getElementById('lightbox').classList.add('open');
 }
 
 function updateLightbox() {
@@ -837,6 +972,10 @@ function updateLightbox() {
 
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
+  const vidEl = document.getElementById('lightbox-video');
+  vidEl.innerHTML = '';
+  vidEl.style.display = 'none';
+  document.getElementById('lightbox-img').style.display = 'block';
 }
 
 document.getElementById('lb-close').addEventListener('click', closeLightbox);

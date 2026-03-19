@@ -300,20 +300,14 @@
   .lightbox-close:hover { border-color: var(--accent); color: var(--accent); }
 
   /* Loading */
-  .loading-gif {
+  .loading-lottie {
     width: 150px;
     height: 150px;
-    border-radius: 4px;
+    border-radius: 50%;
     overflow: hidden;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.5);
     margin: 4px 0;
-  }
-
-  .loading-gif img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+    flex-shrink: 0;
   }
 
   .loading-wrap {
@@ -473,14 +467,6 @@ const IMAGES = {
   'ritratto':{ src: '/img/ritratto.jpg',caption: 'Ulisse Poggioni' },
 };
 
-const LOADING_GIFS = [
-  '/img/profili/p1.gif',
-  '/img/profili/p2.gif',
-  '/img/profili/p3.gif',
-  '/img/profili/p4.gif',
-  '/img/profili/p5.gif',
-];
-
 const PROFILE_IMG = '/img/profilo.jpg';
 
 const OPENING = `Ciao, sono un'AI con fenomenali poteri cosmici ridotta a rispondere a domande su questo Ulisse Poggioni. Chiedimi pure quello che vuoi, che lavoro fa, cosa ha studiato, le sue competenze. Oppure dimmi di cosa ti occupi tu e partiamo da lì, che dici?`;
@@ -493,7 +479,6 @@ const PROMPT_SUGGESTIONS = [
 let history = [];
 let isLoading = false;
 
-function randomGif() { return LOADING_GIFS[Math.floor(Math.random() * LOADING_GIFS.length)]; }
 function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
 function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
 function sendPrompt(text) { document.getElementById('user-input').value = text; sendMessage(); }
@@ -780,9 +765,29 @@ function addTypingIndicator() {
   const el = document.createElement('div');
   el.id = 'typing-indicator';
   el.className = 'message';
-  const gifSrc = randomGif();
-  el.innerHTML = `<div class="message-header"><div class="message-avatar"><img src="${PROFILE_IMG}" alt="Botfolio"></div><div class="message-label">botfolio</div></div><div class="loading-wrap"><div class="loading-gif"><img src="${gifSrc}" alt=""></div><div class="loading-label">ci sto pensando</div></div>`;
+  const lottieContainer = document.createElement('div');
+  lottieContainer.className = 'loading-lottie';
+  lottieContainer.id = 'thinking-lottie';
+  el.innerHTML = `<div class="message-header"><div class="message-avatar"><img src="${PROFILE_IMG}" alt="Botfolio"></div><div class="message-label">botfolio</div></div>`;
+  const wrap = document.createElement('div');
+  wrap.className = 'loading-wrap';
+  wrap.appendChild(lottieContainer);
+  const label = document.createElement('div');
+  label.className = 'loading-label';
+  label.textContent = 'ci sto pensando';
+  wrap.appendChild(label);
+  el.appendChild(wrap);
   document.getElementById('chat').appendChild(el);
+  if (typeof lottie !== 'undefined') {
+    lottie.loadAnimation({
+      container: lottieContainer,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: '/img/thinking/thinking.json',
+      rendererSettings: { preserveAspectRatio: 'xMidYMid slice' }
+    });
+  }
   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
 

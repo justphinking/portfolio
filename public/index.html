@@ -13,13 +13,13 @@
     --bg: #313131;
     --surface: #3a3a3a;
     --border: #4a4a4a;
-    --border-strong: #6a8fa8;
+    --border-strong: #a060a8;
     --text: #e8e4dc;
-    --text-user: #7ab8d8;
+    --text-user: #E983ED;
     --text-muted: #a89e90;
     --text-dim: #686460;
     --text-label: #585450;
-    --accent: #7ab8d8;
+    --accent: #E983ED;
     --line-ai: #585450;
     --mono: 'Inconsolata', monospace;
   }
@@ -221,9 +221,8 @@
   /* Inline image */
   .inline-image {
     margin-top: 12px;
-    border: 1px solid var(--border);
-    display: inline-block;
-    max-width: 320px;
+    display: block;
+    width: 100%;
     cursor: zoom-in;
   }
 
@@ -236,18 +235,16 @@
   .inline-image:hover img { opacity: 0.85; }
 
   .inline-image-caption {
-    padding: 6px 10px;
+    padding: 6px 0;
     font-size: 10px;
     color: var(--text-dim);
     letter-spacing: 0.06em;
-    border-top: 1px solid var(--border);
   }
 
   /* Video cover */
   .video-cover {
     margin-top: 12px;
-    display: inline-block;
-    max-width: 360px;
+    display: block;
     width: 100%;
     position: relative;
     cursor: pointer;
@@ -292,12 +289,10 @@
   }
 
   .video-caption {
-    padding: 6px 10px;
+    padding: 6px 0;
     font-size: 10px;
     color: var(--text-dim);
     letter-spacing: 0.06em;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
   }
 
   /* Video lightbox */
@@ -621,13 +616,9 @@ function buildVideoBlock(key) {
   const cap = document.createElement('div');
   cap.className = 'video-caption';
   cap.textContent = v.caption;
-  const border = document.createElement('div');
-  border.style.cssText = 'border: 1px solid var(--border); display: inline-block; width: 100%;';
-  border.append(wrap);
-  wrap.append(img, btn);
-  border.append(cap);
+  wrap.append(img, btn, cap);
   wrap.addEventListener('click', () => openVideoLightbox(v));
-  return border;
+  return wrap;
 }
 
 async function buildSlider(name) {

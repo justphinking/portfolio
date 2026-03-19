@@ -21,8 +21,6 @@
     --text-label: #585450;
     --accent: #7ab8d8;
     --line-ai: #585450;
-    --link: #2a6a9a;
-    --serif: 'Playfair Display', serif;
     --mono: 'Inconsolata', monospace;
   }
 
@@ -49,7 +47,6 @@
     width: 100%;
     aspect-ratio: 4 / 3;
     overflow: hidden;
-    border: 1px solid var(--border);
   }
 
   .header-img img {
@@ -138,25 +135,12 @@
     transition: opacity 0.2s;
   }
 
-  .message-body a:hover {
-    opacity: 0.7;
-  }
+  .message-body a:hover { opacity: 0.7; }
 
-  .message-body a.contact {
-    color: #e87898;
-  }
+  .message-body a.contact,
+  .contact { color: #e87898; }
 
-  .contact {
-    color: #e87898;
-  }
-
-  .kw {
-    font-weight: 700;
-    color: #e8e4dc;
-  }
-
-
-
+  .kw { font-weight: 700; }
 
   /* Slider */
   .slider-block {
@@ -184,9 +168,7 @@
     cursor: zoom-in;
   }
 
-  .slider-track img.active {
-    opacity: 1;
-  }
+  .slider-track img.active { opacity: 1; }
 
   .slider-controls {
     display: flex;
@@ -211,10 +193,7 @@
     flex-shrink: 0;
   }
 
-  .slider-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
+  .slider-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   .slider-dots {
     display: flex;
@@ -231,9 +210,7 @@
     transition: background 0.2s;
   }
 
-  .slider-dot.active {
-    background: var(--accent);
-  }
+  .slider-dot.active { background: var(--accent); }
 
   .slider-counter {
     font-size: 10px;
@@ -256,9 +233,7 @@
     transition: opacity 0.2s;
   }
 
-  .inline-image:hover img {
-    opacity: 0.85;
-  }
+  .inline-image:hover img { opacity: 0.85; }
 
   .inline-image-caption {
     padding: 6px 10px;
@@ -279,9 +254,7 @@
     justify-content: center;
   }
 
-  .lightbox.open {
-    display: flex;
-  }
+  .lightbox.open { display: flex; }
 
   .lightbox img {
     max-width: 82vw;
@@ -326,23 +299,7 @@
 
   .lightbox-close:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* Cursor */
-  .cursor {
-    display: inline-block;
-    width: 7px;
-    height: 13px;
-    background: var(--text);
-    margin-left: 2px;
-    vertical-align: middle;
-    animation: blink 0.8s step-end infinite;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0; }
-  }
-
-  /* Loading animation */
+  /* Loading */
   .loading-gif {
     width: 150px;
     height: 150px;
@@ -373,36 +330,14 @@
     font-style: italic;
   }
 
-  /* Typing dots fallback */
-  .typing {
-    display: flex;
-    gap: 5px;
-    padding: 4px 0;
-    align-items: center;
-  }
-
-  .typing span {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--text-dim);
-    animation: dot 1.2s ease-in-out infinite;
-  }
-
-  .typing span:nth-child(2) { animation-delay: 0.2s; }
-  .typing span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes dot {
-    0%, 100% { opacity: 0.2; transform: translateY(0); }
-    50%       { opacity: 1;   transform: translateY(-2px); }
-  }
-
+  /* Divider */
   .divider {
     width: 100%;
     height: 1px;
     background: var(--border);
   }
 
+  /* Input */
   .input-area {
     width: 100%;
     display: flex;
@@ -418,9 +353,7 @@
     transition: border-color 0.2s;
   }
 
-  .input-wrapper:focus-within {
-    border-color: var(--accent);
-  }
+  .input-wrapper:focus-within { border-color: var(--accent); }
 
   #user-input {
     flex: 1;
@@ -437,9 +370,7 @@
     padding: 10px 14px;
   }
 
-  #user-input::placeholder {
-    color: var(--text-dim);
-  }
+  #user-input::placeholder { color: var(--text-dim); }
 
   #send-btn {
     background: transparent;
@@ -456,15 +387,8 @@
     flex-shrink: 0;
   }
 
-  #send-btn:hover:not(:disabled) {
-    background: var(--border);
-    color: var(--text);
-  }
-
-  #send-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
+  #send-btn:hover:not(:disabled) { background: var(--border); color: var(--text); }
+  #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
   .input-hint {
     font-size: 10px;
@@ -472,54 +396,34 @@
     letter-spacing: 0.04em;
   }
 
-  .prompt-pills {
+  /* Pills */
+  .prompt-pills,
+  .suggestion-pills {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 4px;
   }
 
-  .prompt-pill {
+  .suggestion-pills { margin-top: 12px; }
+
+  .prompt-pill,
+  .suggestion-pill {
     background: transparent;
-    border: 1px solid var(--border-strong);
-    color: var(--text-muted);
     font-family: var(--mono);
     font-size: 12px;
     padding: 5px 14px;
     cursor: pointer;
     transition: all 0.2s;
     letter-spacing: 0.02em;
-  }
-
-  .suggestion-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-  }
-
-  .suggestion-pill {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-family: var(--mono);
-    font-size: 12px;
-    padding: 5px 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.02em;
     text-align: left;
   }
 
-  .suggestion-pill:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
+  .prompt-pill { border: 1px solid var(--border-strong); color: var(--text-muted); }
+  .suggestion-pill { border: 1px solid var(--border); color: var(--text-muted); }
 
-  .prompt-pill:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
+  .prompt-pill:hover,
+  .suggestion-pill:hover { border-color: var(--accent); color: var(--accent); }
 
   @media (max-width: 480px) {
     .page { padding: 32px 16px 48px; gap: 24px; }
@@ -568,10 +472,23 @@ const IMAGES = {
   'motion':  { src: '/img/motion.jpg',  caption: 'Motion graphics' },
   'ritratto':{ src: '/img/ritratto.jpg',caption: 'Ulisse Poggioni' },
 };
-const LOADING_GIFS = ['/img/profili/p1.gif','/img/profili/p2.gif','/img/profili/p3.gif','/img/profili/p4.gif','/img/profili/p5.gif'];
+
+const LOADING_GIFS = [
+  '/img/profili/p1.gif',
+  '/img/profili/p2.gif',
+  '/img/profili/p3.gif',
+  '/img/profili/p4.gif',
+  '/img/profili/p5.gif',
+];
+
 const PROFILE_IMG = '/img/profilo.jpg';
+
 const OPENING = `Ciao, sono un'AI con fenomenali poteri cosmici ridotta a rispondere a domande su questo Ulisse Poggioni. Chiedimi pure quello che vuoi, che lavoro fa, cosa ha studiato, le sue competenze. Oppure dimmi di cosa ti occupi tu e partiamo da lì, che dici?`;
-const PROMPT_SUGGESTIONS = ['Chi è Ulisse Poggioni?','Che sta succedendo? Come funziona questa cosa?'];
+
+const PROMPT_SUGGESTIONS = [
+  'Chi è Ulisse Poggioni?',
+  'Che sta succedendo? Come funziona questa cosa?',
+];
 
 let history = [];
 let isLoading = false;
@@ -581,24 +498,29 @@ function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(e
 function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
 function sendPrompt(text) { document.getElementById('user-input').value = text; sendMessage(); }
 
-// ── Rendering helpers ────────────────────────────────────────────
+// ── Rendering ────────────────────────────────────────────────────
 
 function renderHTML(text) {
   let t = text;
-  t = t.split('\n').map(line => line.startsWith('- ') ? '\u2013 ' + line.slice(2) : line).join('\n');
+  // Bullet lines
+  t = t.split('\n').map(l => l.startsWith('- ') ? '\u2013 ' + l.slice(2) : l).join('\n');
   t = t
     .replace(/\[k\](.*?)\[\/k\]/g, '<strong class="kw">$1</strong>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // mailto links
     .replace(/\[([^\]]+)\]\(mailto:([^)]+)\)/g, '<a href="mailto:$2" class="contact">$2</a>')
+    // markdown links
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, (_, label, url) => {
-      const isContact = /instagram\.com|t\.me/.test(url);
+      const isContact = /instagram\.com/.test(url);
       return `<a href="${url}" target="_blank" rel="noopener"${isContact ? ' class="contact"' : ''}>${label}</a>`;
     })
-    .replace(/(?<!href="|">)(https?:\/\/[^\s<"]+)/g, url => {
-      const isContact = /instagram\.com|t\.me/.test(url);
+    // bare URLs not already inside an anchor
+    .replace(/(?<!['"=])(https?:\/\/[^\s<"']+)/g, url => {
+      const isContact = /instagram\.com/.test(url);
       return `<a href="${url}" target="_blank" rel="noopener"${isContact ? ' class="contact"' : ''}>${url}</a>`;
     })
+    // phone numbers
     .replace(/(\+39[\s\d]{8,})/g, '<span class="contact">$1</span>')
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br>');
@@ -617,12 +539,15 @@ function buildInlineImage(key) {
 
 async function buildSlider(name) {
   const srcs = [];
-  const exts = ['jpg','jpeg','png','gif','webp'];
+  const exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
   for (let i = 1; i <= 20; i++) {
     let found = false;
     for (const ext of exts) {
       const src = `/img/${name}/${i}.${ext}`;
-      try { const r = await fetch(src, { method: 'HEAD' }); if (r.ok) { srcs.push(src); found = true; break; } } catch(e) {}
+      try {
+        const r = await fetch(src, { method: 'HEAD' });
+        if (r.ok) { srcs.push(src); found = true; break; }
+      } catch(e) {}
     }
     if (!found) break;
   }
@@ -632,9 +557,11 @@ async function buildSlider(name) {
   block.className = 'slider-block';
   const track = document.createElement('div');
   track.className = 'slider-track';
+
   srcs.forEach((src, idx) => {
     const img = document.createElement('img');
-    img.src = src; img.loading = 'lazy';
+    img.src = src;
+    img.loading = 'lazy';
     if (idx === 0) img.classList.add('active');
     img.addEventListener('click', () => openLightbox(src, srcs));
     track.appendChild(img);
@@ -663,11 +590,14 @@ async function buildSlider(name) {
   });
 
   function goTo(n) {
-    imgEls[current].classList.remove('active'); dots[current].classList.remove('active');
+    imgEls[current].classList.remove('active');
+    dots[current].classList.remove('active');
     current = (n + srcs.length) % srcs.length;
-    imgEls[current].classList.add('active'); dots[current].classList.add('active');
+    imgEls[current].classList.add('active');
+    dots[current].classList.add('active');
     counter.textContent = (current + 1) + ' / ' + srcs.length;
   }
+
   prev.addEventListener('click', () => goTo(current - 1));
   next.addEventListener('click', () => goTo(current + 1));
   controls.append(prev, dotsWrap, counter, next);
@@ -689,7 +619,7 @@ function buildSuggestions(questions) {
   return wrap;
 }
 
-// ── Message construction ─────────────────────────────────────────
+// ── Message shell ────────────────────────────────────────────────
 
 function createMessageShell(role) {
   const msg = document.createElement('div');
@@ -718,29 +648,30 @@ function addUserMessage(text) {
   body.innerHTML = renderHTML(text);
 }
 
+function addOpeningMessage(text) {
+  const { body } = createMessageShell('assistant');
+  body.innerHTML = renderHTML(text);
+}
+
 // ── Streaming renderer ───────────────────────────────────────────
-// Processes text chunk by chunk, flushing inline media tags as they appear.
 
 async function streamAssistantMessage(reader) {
-  // Instead of a single body div, we append text nodes and media nodes
-  // in sequence directly into msg, so position is always correct.
   const { msg } = createMessageShell('assistant');
-  // Remove the empty body div createMessageShell added — we manage nodes ourselves
+  // Remove the empty body div — we build nodes inline
   const emptyBody = msg.querySelector('.message-body');
   if (emptyBody) emptyBody.remove();
 
   let buffer = '';
-  let currentTextDiv = null;  // the active text div being streamed into
-  let currentChunk = '';      // text for the current active div only
-  let fullHistory = '';       // complete text for history (all chunks)
-  let questions = [];
+  let currentTextDiv = null;
+  let currentChunk = '';
+  let fullHistory = '';
   let userScrolled = false;
 
   const onScroll = () => {
-    const fromBottom = document.body.scrollHeight - window.scrollY - window.innerHeight;
-    userScrolled = fromBottom > 80;
+    userScrolled = (document.body.scrollHeight - window.scrollY - window.innerHeight) > 80;
   };
   window.addEventListener('scroll', onScroll, { passive: true });
+
   function maybeScroll() {
     if (!userScrolled) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
@@ -758,16 +689,13 @@ async function streamAssistantMessage(reader) {
     if (!text) return;
     currentChunk += text;
     fullHistory += text;
-    const div = getOrCreateTextDiv();
-    div.innerHTML = renderHTML(currentChunk);
+    getOrCreateTextDiv().innerHTML = renderHTML(currentChunk);
     maybeScroll();
   }
 
   async function handleTag(tag) {
     const imgMatch = tag.match(/^\[IMG:([^\]]+)\]$/);
     const sliderMatch = tag.match(/^\[SLIDER:([^\]]+)\]$/);
-    const qMatch = tag.match(/^\[Q\d:([^\]]+)\]$/);
-
     if (imgMatch) {
       currentTextDiv = null;
       currentChunk = '';
@@ -780,9 +708,8 @@ async function streamAssistantMessage(reader) {
       const el = await buildSlider(sliderMatch[1].trim());
       if (el) msg.appendChild(el);
       maybeScroll();
-    } else if (qMatch) {
-      questions.push(qMatch[2].trim());
     }
+    // Q tags are extracted from fullHistory at the end — not handled here
   }
 
   function findMediaTag(text) {
@@ -795,10 +722,8 @@ async function streamAssistantMessage(reader) {
       const found = findMediaTag(buffer);
       if (!found) {
         if (isFinal) {
-          // flush all remaining, including any trailing text after last tag
           if (buffer) { flushTextChunk(buffer); buffer = ''; }
         } else {
-          // hold last 20 chars in case a tag is still arriving
           const safe = buffer.slice(0, -20);
           if (safe) { buffer = buffer.slice(safe.length); flushTextChunk(safe); }
         }
@@ -828,21 +753,19 @@ async function streamAssistantMessage(reader) {
 
   await processBuffer(true);
 
-  // Extract Q tags from fullHistory (they always arrive at the end)
+  // Extract Q tags from fullHistory and render suggestions
   const qTags = [];
   fullHistory.replace(/\[Q\d:([^\]]+)\]/g, (_, q) => qTags.push(q.trim()));
 
-  // Re-render last text div cleanly, stripping Q tags
-  const cleanChunk = currentChunk.replace(/\[Q\d:[^\]]+\]/g, '').trim();
+  // Clean last text div from Q tags
   if (currentTextDiv) {
-    currentTextDiv.innerHTML = renderHTML(cleanChunk);
+    const clean = currentChunk.replace(/\[Q\d:[^\]]+\]/g, '').trim();
+    currentTextDiv.innerHTML = renderHTML(clean);
   }
 
-  // Append suggestions
   if (qTags.length > 0) {
     const sugg = buildSuggestions(qTags);
-    if (sugg) msg.appendChild(sugg);
-    maybeScroll();
+    if (sugg) { msg.appendChild(sugg); maybeScroll(); }
   }
 
   window.removeEventListener('scroll', onScroll);
@@ -868,10 +791,9 @@ function removeTypingIndicator() {
   if (el) el.remove();
 }
 
-// ── Prompt pills ─────────────────────────────────────────────────
+// ── Pills ────────────────────────────────────────────────────────
 
 function addPromptPills() {
-  const chat = document.getElementById('chat');
   const wrap = document.createElement('div');
   wrap.id = 'prompt-pills';
   wrap.className = 'prompt-pills';
@@ -882,20 +804,12 @@ function addPromptPills() {
     btn.onclick = () => { wrap.remove(); sendPrompt(text); };
     wrap.appendChild(btn);
   });
-  chat.appendChild(wrap);
+  document.getElementById('chat').appendChild(wrap);
 }
 
 function removePills() {
   const el = document.getElementById('prompt-pills');
   if (el) el.remove();
-}
-
-// ── Opening message (non-streamed) ───────────────────────────────
-
-function addOpeningMessage(text) {
-  const { msg, body } = createMessageShell('assistant');
-  body.innerHTML = renderHTML(text);
-  return msg;
 }
 
 // ── Lightbox ─────────────────────────────────────────────────────
@@ -904,8 +818,7 @@ let lbImages = [], lbIndex = 0;
 
 function openLightbox(src, images) {
   lbImages = images && images.length > 0 ? images : [src];
-  lbIndex = lbImages.indexOf(src);
-  if (lbIndex < 0) lbIndex = 0;
+  lbIndex = Math.max(0, lbImages.indexOf(src));
   updateLightbox();
   document.getElementById('lightbox').classList.add('open');
   const mult = lbImages.length > 1;
@@ -913,13 +826,29 @@ function openLightbox(src, images) {
   document.getElementById('lb-next').style.display = mult ? 'block' : 'none';
 }
 
-function updateLightbox() { document.getElementById('lightbox-img').src = lbImages[lbIndex]; }
-function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+function updateLightbox() {
+  document.getElementById('lightbox-img').src = lbImages[lbIndex];
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
 
 document.getElementById('lb-close').addEventListener('click', closeLightbox);
-document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length; updateLightbox(); });
-document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); lbIndex = (lbIndex + 1) % lbImages.length; updateLightbox(); });
-document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox') || e.target === document.getElementById('lightbox-img')) closeLightbox(); });
+document.getElementById('lb-prev').addEventListener('click', e => {
+  e.stopPropagation();
+  lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length;
+  updateLightbox();
+});
+document.getElementById('lb-next').addEventListener('click', e => {
+  e.stopPropagation();
+  lbIndex = (lbIndex + 1) % lbImages.length;
+  updateLightbox();
+});
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === document.getElementById('lightbox') ||
+      e.target === document.getElementById('lightbox-img')) closeLightbox();
+});
 document.addEventListener('keydown', e => {
   if (!document.getElementById('lightbox').classList.contains('open')) return;
   if (e.key === 'Escape') closeLightbox();
@@ -933,12 +862,14 @@ document.addEventListener('keydown', e => {
   lb.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) < 40) return;
-    lbIndex = dx < 0 ? (lbIndex + 1) % lbImages.length : (lbIndex - 1 + lbImages.length) % lbImages.length;
+    lbIndex = dx < 0
+      ? (lbIndex + 1) % lbImages.length
+      : (lbIndex - 1 + lbImages.length) % lbImages.length;
     updateLightbox();
   }, { passive: true });
 })();
 
-// ── Send message ─────────────────────────────────────────────────
+// ── Send ─────────────────────────────────────────────────────────
 
 async function sendMessage() {
   if (isLoading) return;
@@ -962,17 +893,16 @@ async function sendMessage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: history })
     });
-
     removeTypingIndicator();
 
     if (!res.ok || !res.body) {
-      const { msg, body } = createMessageShell('assistant');
+      const { body } = createMessageShell('assistant');
       body.innerHTML = renderHTML('Si è verificato un errore. Riprova.');
     } else {
       const reply = await streamAssistantMessage(res.body.getReader());
       history.push({ role: 'assistant', content: reply });
     }
-  } catch (err) {
+  } catch(err) {
     removeTypingIndicator();
     const { body } = createMessageShell('assistant');
     body.innerHTML = renderHTML('Errore di connessione. Riprova.');
@@ -986,7 +916,6 @@ async function sendMessage() {
 // ── Init ─────────────────────────────────────────────────────────
 
 window.addEventListener('load', () => {
-  // Init Lottie header
   if (typeof lottie !== 'undefined') {
     lottie.loadAnimation({
       container: document.getElementById('lottie-header'),
@@ -994,9 +923,7 @@ window.addEventListener('load', () => {
       loop: true,
       autoplay: true,
       path: '/img/header/header_1.json',
-      rendererSettings: {
-        preserveAspectRatio: 'xMidYMid slice'
-      }
+      rendererSettings: { preserveAspectRatio: 'xMidYMid slice' }
     });
   }
   addOpeningMessage(OPENING);

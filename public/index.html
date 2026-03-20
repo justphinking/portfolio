@@ -254,6 +254,30 @@
     letter-spacing: 0.06em;
   }
 
+  /* Image grid */
+  .image-grid {
+    margin-top: 14px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .image-grid-item {
+    cursor: zoom-in;
+    display: block;
+    width: 100%;
+  }
+
+  .image-grid-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: opacity 0.2s;
+  }
+
+  .image-grid-item:hover img { opacity: 0.8; }
+
   /* Video cover */
   .video-cover {
     margin-top: 12px;
@@ -653,6 +677,39 @@ function buildInlineAnim(name) {
   return container;
 }
 
+async function buildGrid(name) {
+  const srcs = [];
+  const exts = ['jpg', 'jpeg', 'png', 'webp'];
+  for (let i = 1; i <= 30; i++) {
+    let found = false;
+    for (const ext of exts) {
+      const src = `/img/${name}/${i}.${ext}`;
+      try {
+        const r = await fetch(src, { method: 'HEAD' });
+        if (r.ok) { srcs.push(src); found = true; break; }
+      } catch(e) {}
+    }
+    if (!found) break;
+  }
+  if (srcs.length === 0) return null;
+
+  const grid = document.createElement('div');
+  grid.className = 'image-grid';
+
+  srcs.forEach((src, idx) => {
+    const item = document.createElement('div');
+    item.className = 'image-grid-item';
+    const img = document.createElement('img');
+    img.src = src;
+    img.loading = 'lazy';
+    item.appendChild(img);
+    item.addEventListener('click', () => openLightboxAtIndex(src, srcs, idx));
+    grid.appendChild(item);
+  });
+
+  return grid;
+}
+
 async function buildSlider(name) {
   const srcs = [];
   const exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
@@ -833,10 +890,17 @@ async function streamAssistantMessage(reader) {
       maybeScroll();
     } else {
       const animMatch = tag.match(/^\[ANIM:([^\]]+)\]$/);
+      const gridMatch = tag.match(/^\[GRID:([^\]]+)\]$/);
       if (animMatch) {
         currentTextDiv = null;
         currentChunk = '';
         const el = buildInlineAnim(animMatch[1].trim());
+        if (el) msg.appendChild(el);
+        maybeScroll();
+      } else if (gridMatch) {
+        currentTextDiv = null;
+        currentChunk = '';
+        const el = await buildGrid(gridMatch[1].trim());
         if (el) msg.appendChild(el);
         maybeScroll();
       }
@@ -845,7 +909,7 @@ async function streamAssistantMessage(reader) {
   }
 
   function findMediaTag(text) {
-    const m = text.match(/^([\s\S]*?)(\[(?:IMG|SLIDER|VIDEO|ANIM):[^\]]+\])([\s\S]*)$/);
+    const m = text.match(/^([\s\S]*?)(\[(?:IMG|SLIDER|VIDEO|ANIM|GRID):[^\]]+\])([\s\S]*)$/);
     return m ? { before: m[1], tag: m[2], after: m[3] } : null;
   }
 

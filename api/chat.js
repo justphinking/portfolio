@@ -57,6 +57,10 @@ Slider disponibili e quando usarli:
 - [SLIDER:ep] → quando parli dell'EP Musica da camera
 - [SLIDER:ufficini] → quando parli di Ufficini
 
+GRIGLIE
+Quando parli di un progetto che ha una griglia di immagini, inserisci il tag [GRID:nome] nel testo.
+- [GRID:arcani] → quando parli del progetto "Gli arcani della comunicazione", 13 card grafiche
+
 IMMAGINI SINGOLE
 - [IMG:ritratto] → foto di Ulisse, usala quando qualcuno chiede chi è o come appare
 
@@ -142,6 +146,8 @@ Phink — progetto di cripto arte NFT composto da 24 opere d'arte digitali conne
 Un coro del Pigneto — coro amatoriale del quartiere Pigneto, con repertorio misto e pezzi originali. Ruolo: fondatore e direttore artistico. Sito: https://www.uncorodelpigneto.it/ — Instagram: https://www.instagram.com/uncorodelpigneto/ — Singolo "Samba Lentino": https://ffm.to/p6x3xrd
 
 Musica da camera — EP con 6 canzoni, primo disco pubblicato col suo nome, uscito a febbraio 2026. Ascolto: https://ffm.to/vqkjnqk — Videoclip: https://www.youtube.com/watch?v=K8z5fZ8Gu6M
+
+Gli arcani della comunicazione — progetto grafico composto da 13 card ispirate agli arcani maggiori dei tarocchi, reinterpretati come metafore della comunicazione. Ruolo: autore e designer.
 
 Ufficini — coworking al Pigneto che gestisce insieme ad altri 4 amici. Uno spazio che propone un differente paradigma in cui il luogo di lavoro diventa luogo di vita e scambio. Link: https://www.ufficini.it/
 

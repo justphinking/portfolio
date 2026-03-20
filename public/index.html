@@ -142,6 +142,15 @@
 
   .kw { font-weight: 700; }
 
+  /* Inline Lottie animation */
+  .inline-anim {
+    margin-top: 12px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 320px;
+    display: block;
+  }
+
   /* Slider */
   .slider-block {
     margin-top: 14px;
@@ -621,6 +630,22 @@ function buildVideoBlock(key) {
   return wrap;
 }
 
+function buildInlineAnim(name) {
+  const container = document.createElement('div');
+  container.className = 'inline-anim';
+  if (typeof lottie !== 'undefined') {
+    lottie.loadAnimation({
+      container,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: `/img/ulisse/${name}/${name}.json`,
+      rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
+    });
+  }
+  return container;
+}
+
 async function buildSlider(name) {
   const srcs = [];
   const exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
@@ -799,12 +824,21 @@ async function streamAssistantMessage(reader) {
       const el = buildVideoBlock(videoMatch[1].trim());
       if (el) msg.appendChild(el);
       maybeScroll();
+    } else {
+      const animMatch = tag.match(/^\[ANIM:([^\]]+)\]$/);
+      if (animMatch) {
+        currentTextDiv = null;
+        currentChunk = '';
+        const el = buildInlineAnim(animMatch[1].trim());
+        if (el) msg.appendChild(el);
+        maybeScroll();
+      }
     }
     // Q tags are extracted from fullHistory at the end — not handled here
   }
 
   function findMediaTag(text) {
-    const m = text.match(/^([\s\S]*?)(\[(?:IMG|SLIDER|VIDEO):[^\]]+\])([\s\S]*)$/);
+    const m = text.match(/^([\s\S]*?)(\[(?:IMG|SLIDER|VIDEO|ANIM):[^\]]+\])([\s\S]*)$/);
     return m ? { before: m[1], tag: m[2], after: m[3] } : null;
   }
 

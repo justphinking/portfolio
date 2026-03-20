@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Ulisse Poggioni</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -21,14 +21,15 @@
     --text-label: #585450;
     --accent: #E983ED;
     --line-ai: #585450;
-    --mono: 'Inconsolata', monospace;
+    --text-font: 'Lora', serif;
+    --ui-font: 'DM Sans', sans-serif;
   }
 
   html, body {
     min-height: 100%;
     background: var(--bg);
     color: var(--text);
-    font-family: var(--mono);
+    font-family: var(--text-font);
     font-size: 14px;
     line-height: 1.6;
   }
@@ -106,6 +107,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-label);
+    font-family: var(--ui-font);
   }
 
   .message-body {
@@ -138,7 +140,7 @@
   .message-body a:hover { opacity: 0.7; }
 
   .message-body a.contact,
-  .contact { color: #e87898; }
+  .contact { color: #EBED83; }
 
   .kw { font-weight: 700; }
 
@@ -190,7 +192,7 @@
     background: transparent;
     border: 1px solid var(--border);
     color: var(--text-dim);
-    font-family: var(--mono);
+    font-family: var(--ui-font);
     font-size: 14px;
     width: 28px;
     height: 28px;
@@ -222,6 +224,7 @@
   .slider-dot.active { background: var(--accent); }
 
   .slider-counter {
+    font-family: var(--ui-font);
     font-size: 10px;
     color: var(--text-dim);
     letter-spacing: 0.06em;
@@ -244,6 +247,7 @@
   .inline-image:hover img { opacity: 0.85; }
 
   .inline-image-caption {
+    font-family: var(--ui-font);
     padding: 6px 0;
     font-size: 10px;
     color: var(--text-dim);
@@ -298,6 +302,7 @@
   }
 
   .video-caption {
+    font-family: var(--ui-font);
     padding: 6px 0;
     font-size: 10px;
     color: var(--text-dim);
@@ -395,6 +400,7 @@
   }
 
   .loading-label {
+    font-family: var(--ui-font);
     font-size: 12px;
     color: var(--text-dim);
     letter-spacing: 0.06em;
@@ -432,8 +438,8 @@
     border: none;
     outline: none;
     color: var(--text);
-    font-family: var(--mono);
-    font-size: 16px;
+    font-family: var(--text-font);
+    font-size: 15px;
     line-height: 1.6;
     resize: none;
     max-height: 120px;
@@ -448,7 +454,7 @@
     border: none;
     border-left: 1px solid var(--border);
     color: var(--text-muted);
-    font-family: var(--mono);
+    font-family: var(--ui-font);
     font-size: 12px;
     letter-spacing: 0.06em;
     padding: 0 16px;
@@ -462,6 +468,7 @@
   #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
   .input-hint {
+    font-family: var(--ui-font);
     font-size: 10px;
     color: var(--text-dim);
     letter-spacing: 0.04em;
@@ -481,7 +488,7 @@
   .prompt-pill,
   .suggestion-pill {
     background: transparent;
-    font-family: var(--mono);
+    font-family: var(--ui-font);
     font-size: 12px;
     padding: 5px 14px;
     cursor: pointer;
@@ -672,7 +679,7 @@ async function buildSlider(name) {
     img.src = src;
     img.loading = 'lazy';
     if (idx === 0) img.classList.add('active');
-    img.addEventListener('click', () => openLightbox(src, srcs));
+    img.addEventListener('click', (function(s, idx) { return function() { openLightboxAtIndex(s, srcs, idx); }; })(src, idx));
     track.appendChild(img);
   });
 
@@ -960,6 +967,21 @@ function removePills() {
 // ── Lightbox ─────────────────────────────────────────────────────
 
 let lbImages = [], lbIndex = 0;
+
+function openLightboxAtIndex(src, images, index) {
+  lbImages = images && images.length > 0 ? images : [src];
+  lbIndex = index !== undefined ? index : Math.max(0, lbImages.indexOf(src));
+  const imgEl = document.getElementById('lightbox-img');
+  const vidEl = document.getElementById('lightbox-video');
+  imgEl.style.display = 'block';
+  vidEl.style.display = 'none';
+  vidEl.innerHTML = '';
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('open');
+  const mult = lbImages.length > 1;
+  document.getElementById('lb-prev').style.display = mult ? 'block' : 'none';
+  document.getElementById('lb-next').style.display = mult ? 'block' : 'none';
+}
 
 function openLightbox(src, images) {
   lbImages = images && images.length > 0 ? images : [src];

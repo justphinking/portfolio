@@ -48,8 +48,8 @@ Video disponibili:
 
 Slider disponibili e quando usarli:
 - [SLIDER:webdesign] → quando parli di web design o mostri esempi di siti
-- [SLIDER:branding/novantacinquegradi|Novantacinque Gradi è una bottega di eccellenze alimentari di Monteverde Vecchio a Roma, specializzata in mozzarella di bufala e tartufo. Ho curato il branding con tutte le sue declinazioni e l'allestimento grafico del negozio.] → quando parli del progetto Novantacinque Gradi o del branding per il settore food
-- [SLIDER:branding/padelino|Il Padelino è un Padel Club di Roma che offre campi e servizi di alto livello. Ho curato il branding con tutte le sue declinazioni, l'allestimento grafico del centro e diretto gli shooting fotografici.] → quando parli del progetto Il Padelino o del branding per il settore sport
+- [SLIDER:branding/novantacinquegradi] → quando parli del progetto Novantacinque Gradi o del branding per il settore food
+- [SLIDER:branding/padelino] → quando parli del progetto Il Padelino o del branding per il settore sport
 - [SLIDER:motion] → quando parli di motion graphics (nota: per riservatezza puoi mostrare solo un progetto personale; per altri lavori invita al contatto diretto)
 - [SLIDER:grafica] → quando parli di art direction, grafica, design
 - [SLIDER:kahbum] → quando parli del progetto Kahbum

@@ -589,6 +589,11 @@ const VIDEOS = {
   'reelfood': { cover: '/img/video/reelfood.jpg', type: 'mp4',     src: '/video/reelfood.mp4', caption: 'Reel food — content creation' },
 };
 
+const SLIDER_CAPTIONS = {
+  'branding/novantacinquegradi': 'Bottega di eccellenze alimentari a Monteverde Vecchio, Roma. Specializzata in mozzarella di bufala e tartufo. Branding completo, declinazioni e allestimento grafico del negozio.',
+  'branding/padelino': 'Padel Club di Roma con campi e servizi di alto livello. Branding completo, allestimento grafico del centro e direzione degli shooting fotografici.',
+};
+
 const PROFILE_IMG = '/img/profilo.jpg';
 
 const OPENING = `Ciao, sono un'AI con fenomenali poteri cosmici ridotta a rispondere a domande su questo Ulisse Poggioni. Chiedimi pure quello che vuoi, che lavoro fa, cosa ha studiato, le sue competenze. Oppure dimmi di cosa ti occupi tu e partiamo da lì, che dici?`;
@@ -893,9 +898,8 @@ async function streamAssistantMessage(reader) {
     } else if (sliderMatch) {
       currentTextDiv = null;
       currentChunk = '';
-      const parts = sliderMatch[1].trim().split('|');
-      const sliderName = parts[0].trim();
-      const sliderCaption = parts[1] ? parts[1].trim() : null;
+      const sliderName = sliderMatch[1].trim().split('|')[0].trim();
+      const sliderCaption = SLIDER_CAPTIONS[sliderName] || null;
       const el = await buildSlider(sliderName, sliderCaption);
       if (el) msg.appendChild(el);
       maybeScroll();
@@ -937,8 +941,17 @@ async function streamAssistantMessage(reader) {
         if (isFinal) {
           if (buffer) { flushTextChunk(buffer); buffer = ''; }
         } else {
-          const safe = buffer.slice(0, -20);
-          if (safe) { buffer = buffer.slice(safe.length); flushTextChunk(safe); }
+          // Find the last open [ that hasn't been closed — hold everything from there
+          const lastOpen = buffer.lastIndexOf('[');
+          if (lastOpen === -1) {
+            // No open tag — safe to flush all but last 5 chars
+            const safe = buffer.slice(0, -5);
+            if (safe) { buffer = buffer.slice(safe.length); flushTextChunk(safe); }
+          } else {
+            // Hold from lastOpen onward — might be a tag still arriving
+            const safe = buffer.slice(0, lastOpen);
+            if (safe) { buffer = buffer.slice(safe.length); flushTextChunk(safe); }
+          }
         }
         break;
       }

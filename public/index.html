@@ -613,8 +613,6 @@ const SLIDER_CAPTIONS = {
 
 const PROFILE_IMG = '/img/profilo.jpg';
 
-const OPENING = `Ciao, sono un'AI con fenomenali poteri cosmici ridotta a rispondere a domande su questo Ulisse Poggioni. Chiedimi pure quello che vuoi, che lavoro fa, cosa ha studiato, le sue competenze. Oppure dimmi di cosa ti occupi tu e partiamo da lì, che dici?`;
-
 const PROMPT_SUGGESTIONS = [
   'Chi è Ulisse Poggioni?',
   'Che sta succedendo? Come funziona questa cosa?',
@@ -1228,9 +1226,34 @@ window.addEventListener('load', () => {
       rendererSettings: { preserveAspectRatio: 'xMidYMid slice' }
     });
   }
-  addOpeningMessage(OPENING);
-  addPromptPills();
+  generateOpening();
 });
+
+async function generateOpening() {
+  addTypingIndicator();
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: '__OPENING__' }]
+      })
+    });
+    removeTypingIndicator();
+    if (res.ok && res.body) {
+      const reply = await streamAssistantMessage(res.body.getReader());
+      history = [];
+    } else {
+      const { body } = createMessageShell('assistant');
+      body.innerHTML = renderHTML('Ciao. Sono qui per risponderti su Ulisse Poggioni.');
+    }
+  } catch(e) {
+    removeTypingIndicator();
+    const { body } = createMessageShell('assistant');
+    body.innerHTML = renderHTML('Ciao. Sono qui per risponderti su Ulisse Poggioni.');
+  }
+  addPromptPills();
+}
 </script>
 </body>
 </html>

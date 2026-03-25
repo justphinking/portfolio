@@ -104,10 +104,11 @@
 
   .message-label {
     font-size: 11px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--text-label);
+    color: var(--text-muted);
     font-family: var(--ui-font);
+    font-weight: 500;
   }
 
   .message-body {
@@ -841,7 +842,7 @@ function createMessageShell(role) {
   }
   const label = document.createElement('div');
   label.className = 'message-label';
-  label.textContent = role === 'user' ? 'tu' : 'super-mega ai';
+  label.textContent = role === 'user' ? 'tu' : 'botfolio';
   header.appendChild(label);
   const body = document.createElement('div');
   body.className = 'message-body' + (role === 'user' ? ' user-body' : '');

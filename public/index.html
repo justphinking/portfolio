@@ -1232,7 +1232,6 @@ window.addEventListener('load', () => {
 });
 
 async function generateOpening() {
-  addTypingIndicator();
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
@@ -1241,7 +1240,6 @@ async function generateOpening() {
         messages: [{ role: 'user', content: '__OPENING__' }]
       })
     });
-    removeTypingIndicator();
     if (res.ok && res.body) {
       // Save and restore history so opening doesn't pollute conversation
       const savedHistory = history;
@@ -1253,7 +1251,6 @@ async function generateOpening() {
       body.innerHTML = renderHTML('Ciao. Sono qui per risponderti su Ulisse Poggioni.');
     }
   } catch(e) {
-    removeTypingIndicator();
     const { body } = createMessageShell('assistant');
     body.innerHTML = renderHTML('Ciao. Sono qui per risponderti su Ulisse Poggioni.');
   }

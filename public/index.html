@@ -1241,8 +1241,11 @@ async function generateOpening() {
     });
     removeTypingIndicator();
     if (res.ok && res.body) {
-      const reply = await streamAssistantMessage(res.body.getReader());
+      // Save and restore history so opening doesn't pollute conversation
+      const savedHistory = history;
       history = [];
+      await streamAssistantMessage(res.body.getReader());
+      history = savedHistory;
     } else {
       const { body } = createMessageShell('assistant');
       body.innerHTML = renderHTML('Ciao. Sono qui per risponderti su Ulisse Poggioni.');

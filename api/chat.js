@@ -2,9 +2,11 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+  console.log('body:', JSON.stringify(req.body));
   const { messages } = req.body;
   if (!messages || !Array.isArray(messages)) {
-    return res.status(400).json({ error: 'Invalid request' });
+    console.log('validation failed - messages:', messages, 'body keys:', Object.keys(req.body || {}));
+    return res.status(400).json({ error: 'Invalid request', body: req.body });
   }
 
   const SYSTEM_PROMPT = `Sei l'assistente personale di Ulisse Poggioni, art director romano. Rispondi in italiano (adattati se l'utente scrive in altra lingua).

@@ -122,7 +122,8 @@ CONTATTI: ulisse.poggioni@gmail.com — +39 345 0727449 — [instagram.com/uliss
 
     if (!response.ok) {
       const err = await response.json();
-      return res.status(response.status).json({ error: err.error?.message || 'API error' });
+      console.log('Anthropic error:', response.status, JSON.stringify(err));
+      return res.status(response.status).json({ error: err.error?.message || 'API error', detail: err });
     }
 
     res.setHeader('Content-Type', 'text/event-stream');

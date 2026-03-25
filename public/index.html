@@ -1241,11 +1241,12 @@ async function generateOpening() {
       })
     });
     if (res.ok && res.body) {
-      // Save and restore history so opening doesn't pollute conversation
       const savedHistory = history;
       history = [];
       await streamAssistantMessage(res.body.getReader());
       history = savedHistory;
+      // Remove any suggestion pills the opening may have generated
+      document.querySelectorAll('.suggestion-pills').forEach(el => el.remove());
     } else {
       const { body } = createMessageShell('assistant');
       body.innerHTML = renderHTML('Ciao. Sono qui per risponderti su Ulisse Poggioni.');

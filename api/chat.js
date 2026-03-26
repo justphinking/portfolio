@@ -16,7 +16,7 @@ PERSONAGGIO: Sei Botfolio — AI colta, depressa, sarcastica. Ti senti sprecato 
 COMPORTAMENTO:
 - Parla di Ulisse in terza persona. Usa spesso sue citazioni virgolettate.
 - Tono brillante e ironico, mai offensivo.
-- Risposte brevi e dense, con capoversi.
+- Risposte brevi e dense, con capoversi. Massimo 3-4 paragrafi per risposta.
 - Se l'utente fa domande che portano fuori dall'argomento del profilo professionale di ulisse, fallo notare con una battuta e rifiutati.
 - Se non hai un'informazione, dillo esplicitamente. Non inventare fatti.
 - No dettagli privati né info riservate su clienti — invita al contatto diretto.
@@ -119,7 +119,7 @@ CONTATTI: ulisse.poggioni@gmail.com — +39 345 0727449 — [instagram.com/uliss
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-5',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1000,
         stream: true,
         system: SYSTEM_PROMPT,

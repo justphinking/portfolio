@@ -10,28 +10,44 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #313131;
-    --surface: #3a3a3a;
-    --border: #4a4a4a;
-    --border-strong: #a060a8;
-    --text: #e8e4dc;
-    --text-user: #E983ED;
-    --text-muted: #a89e90;
-    --text-dim: #686460;
-    --text-label: #585450;
-    --accent: #E983ED;
-    --line-ai: #585450;
+    --bg: #213546;
+    --surface: #1e2f3e;
+    --border: #2e4557;
+    --border-strong: #b23979;
+    --text: #86a3b3;
+    --text-user: #ff5b8c;
+    --text-muted: #5a7a8e;
+    --text-dim: #3a5568;
+    --text-label: #3a5568;
+    --accent: #ffffff;
+    --line-ai: #2e4557;
     --text-font: 'Lora', serif;
     --ui-font: 'DM Sans', sans-serif;
   }
 
   html, body {
     min-height: 100%;
-    background: var(--bg);
+    background: linear-gradient(
+      to bottom,
+      #b23979 calc((100vw - 48px) * 2 / 3 - 80px),
+      #213546 calc((100vw - 48px) * 2 / 3 + 80px)
+    );
+    background-attachment: fixed;
     color: var(--text);
     font-family: var(--text-font);
     font-size: 14px;
     line-height: 1.6;
+  }
+
+  @media (min-width: 640px) {
+    html, body {
+      background: linear-gradient(
+        to bottom,
+        #b23979 calc(427px - 80px),
+        #213546 calc(427px + 80px)
+      );
+      background-attachment: fixed;
+    }
   }
 
   .page {
@@ -62,7 +78,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: var(--surface);
+    background: rgba(33,53,70,0.7);
     border: 1px solid var(--border);
     display: flex;
     align-items: center;
@@ -175,9 +191,9 @@
   .message-body a:hover { opacity: 0.7; }
 
   .message-body a.contact,
-  .contact { color: #EBED83; }
+  .contact { color: #dc894a; }
 
-  .kw { font-weight: 700; }
+  .kw { font-weight: 700; color: #ffffff; }
 
   /* Inline Lottie animation */
   .inline-anim {
@@ -986,7 +1002,6 @@ async function streamAssistantMessage(reader) {
       currentChunk = '';
       const el = buildInlineImage(imgMatch[1].trim());
       if (el) msg.appendChild(el);
-      maybeScroll();
     } else if (sliderMatch) {
       currentTextDiv = null;
       currentChunk = '';
@@ -994,13 +1009,11 @@ async function streamAssistantMessage(reader) {
       const sliderCaption = SLIDER_CAPTIONS[sliderName] || null;
       const el = await buildSlider(sliderName, sliderCaption);
       if (el) msg.appendChild(el);
-      maybeScroll();
     } else if (videoMatch) {
       currentTextDiv = null;
       currentChunk = '';
       const el = buildVideoBlock(videoMatch[1].trim());
       if (el) msg.appendChild(el);
-      maybeScroll();
     } else {
       const animMatch = tag.match(/^\[ANIM:([^\]]+)\]$/);
       const gridMatch = tag.match(/^\[GRID:([^\]]+)\]$/);
@@ -1009,13 +1022,11 @@ async function streamAssistantMessage(reader) {
         currentChunk = '';
         const el = buildInlineAnim(animMatch[1].trim());
         if (el) msg.appendChild(el);
-        maybeScroll();
       } else if (gridMatch) {
         currentTextDiv = null;
         currentChunk = '';
         const el = await buildGrid(gridMatch[1].trim());
         if (el) msg.appendChild(el);
-        maybeScroll();
       }
     }
     // Q tags are extracted from fullHistory at the end — not handled here

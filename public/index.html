@@ -964,6 +964,7 @@ async function streamAssistantMessage(reader) {
   let currentChunk = '';
   let fullHistory = '';
   let userScrolled = false;
+  let mediaJustInserted = false;
 
   const onScroll = () => {
     userScrolled = (document.body.scrollHeight - window.scrollY - window.innerHeight) > 80;
@@ -971,6 +972,7 @@ async function streamAssistantMessage(reader) {
   window.addEventListener('scroll', onScroll, { passive: true });
 
   function maybeScroll() {
+    if (mediaJustInserted) { mediaJustInserted = false; return; }
     if (!userScrolled) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
 
@@ -999,19 +1001,19 @@ async function streamAssistantMessage(reader) {
       currentTextDiv = null;
       currentChunk = '';
       const el = buildInlineImage(imgMatch[1].trim());
-      if (el) msg.appendChild(el);
+      if (el) { msg.appendChild(el); mediaJustInserted = true; }
     } else if (sliderMatch) {
       currentTextDiv = null;
       currentChunk = '';
       const sliderName = sliderMatch[1].trim().split('|')[0].trim();
       const sliderCaption = SLIDER_CAPTIONS[sliderName] || null;
       const el = await buildSlider(sliderName, sliderCaption);
-      if (el) msg.appendChild(el);
+      if (el) { msg.appendChild(el); mediaJustInserted = true; }
     } else if (videoMatch) {
       currentTextDiv = null;
       currentChunk = '';
       const el = buildVideoBlock(videoMatch[1].trim());
-      if (el) msg.appendChild(el);
+      if (el) { msg.appendChild(el); mediaJustInserted = true; }
     } else {
       const animMatch = tag.match(/^\[ANIM:([^\]]+)\]$/);
       const gridMatch = tag.match(/^\[GRID:([^\]]+)\]$/);
@@ -1019,12 +1021,12 @@ async function streamAssistantMessage(reader) {
         currentTextDiv = null;
         currentChunk = '';
         const el = buildInlineAnim(animMatch[1].trim());
-        if (el) msg.appendChild(el);
+        if (el) { msg.appendChild(el); mediaJustInserted = true; }
       } else if (gridMatch) {
         currentTextDiv = null;
         currentChunk = '';
         const el = await buildGrid(gridMatch[1].trim());
-        if (el) msg.appendChild(el);
+        if (el) { msg.appendChild(el); mediaJustInserted = true; }
       }
     }
     // Q tags are extracted from fullHistory at the end — not handled here

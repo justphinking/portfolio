@@ -32,7 +32,6 @@
       #b23979 calc((100vw - 48px) * 2 / 3 - 80px),
       #213546 calc((100vw - 48px) * 2 / 3 + 80px)
     );
-    background-attachment: fixed;
     color: var(--text);
     font-family: var(--text-font);
     font-size: 14px;
@@ -46,8 +45,7 @@
         #b23979 calc(427px - 80px),
         #213546 calc(427px + 80px)
       );
-      background-attachment: fixed;
-    }
+      }
   }
 
   .page {
@@ -1098,7 +1096,6 @@ async function streamAssistantMessage(reader) {
   }
 
   window.removeEventListener('scroll', onScroll);
-  maybeScroll();
 
   return fullHistory.replace(/\[Q\d:[^\]]+\]/g, '').trim();
 }

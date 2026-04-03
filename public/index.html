@@ -1399,15 +1399,26 @@ async function copyEmail() {
   const canvas = document.getElementById('sparkle-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  const dpr = window.devicePixelRatio || 1;
+  let W, H;
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
   resize();
   window.addEventListener('resize', resize);
 
   function rand(a, b) { return a + Math.random() * (b - a); }
-  const COUNT = 33;
+  const COUNT = 40;
   const DOTS = Array.from({length: COUNT}, () => ({
-    x: rand(0, canvas.width), y: rand(0, canvas.height),
-    r: rand(0.3, 0.9),
+    x: rand(0, W), y: rand(0, H),
+    r: rand(0.6, 1.6),
     color: Math.random() > 0.45 ? 'white' : 'pink',
     speed: rand(1.2, 2.8),
     life: rand(0, 1.5),
@@ -1415,8 +1426,8 @@ async function copyEmail() {
   }));
 
   function respawn(d) {
-    d.x = rand(0, canvas.width); d.y = rand(0, canvas.height);
-    d.r = rand(0.3, 0.9);
+    d.x = rand(0, W); d.y = rand(0, H);
+    d.r = rand(0.6, 1.6);
     d.color = Math.random() > 0.45 ? 'white' : 'pink';
     d.speed = rand(1.2, 2.8);
     d.maxLife = rand(0.6, 1.8);
@@ -1426,7 +1437,7 @@ async function copyEmail() {
   let last = performance.now();
   function draw(now) {
     const dt = (now - last) / 1000; last = now;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, W, H);
     for (const d of DOTS) {
       d.life += dt * d.speed;
       if (d.life >= d.maxLife) { respawn(d); continue; }
@@ -1435,8 +1446,8 @@ async function copyEmail() {
       ctx.beginPath();
       ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
       ctx.fillStyle = d.color === 'white'
-        ? `rgba(255,255,255,${alpha * 0.8})`
-        : `rgba(255,91,140,${alpha * 0.85})`;
+        ? `rgba(255,255,255,${alpha * 0.9})`
+        : `rgba(255,91,140,${alpha * 0.95})`;
       ctx.fill();
     }
     requestAnimationFrame(draw);

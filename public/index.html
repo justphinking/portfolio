@@ -90,8 +90,9 @@
   }
 
   .contact-icon:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    opacity: 0.7;
+    transform: scale(1.1);
+    transition: opacity 0.2s, transform 0.2s;
   }
 
   .contact-icon svg {
@@ -495,9 +496,9 @@
   }
 
   .loading-label {
-    font-family: var(--ui-font);
+    font-family: var(--text-font);
     font-size: 12px;
-    color: var(--text-dim);
+    color: var(--text);
     letter-spacing: 0.06em;
     font-style: italic;
   }
@@ -542,7 +543,7 @@
     padding: 10px 14px;
   }
 
-  #user-input::placeholder { color: var(--text-dim); }
+  #user-input::placeholder { color: var(--text-muted); }
 
   #send-btn {
     background: transparent;
@@ -565,7 +566,7 @@
   .input-hint {
     font-family: var(--text-font);
     font-size: 10px;
-    color: rgba(255,91,140,0.4);
+    color: rgba(255,91,140,0.65);
     letter-spacing: 0.04em;
   }
 
@@ -592,11 +593,11 @@
     text-align: left;
   }
 
-  .prompt-pill { border: 1px solid rgba(255,91,140,0.4); color: rgba(255,91,140,0.7); font-family: var(--text-font); }
-  .suggestion-pill { border: 1px solid rgba(255,91,140,0.3); color: rgba(255,91,140,0.6); font-family: var(--text-font); }
+  .prompt-pill { border: 1px solid rgba(255,91,140,0.4); color: rgba(255,91,140,0.7); font-family: var(--text-font); clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%); }
+  .suggestion-pill { border: 1px solid rgba(255,91,140,0.3); color: rgba(255,91,140,0.6); font-family: var(--text-font); clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%); }
 
   .prompt-pill:hover,
-  .suggestion-pill:hover { border-color: #ff5b8c; color: #ff5b8c; }
+  .suggestion-pill:hover { border-color: #ff5b8c; color: #ff5b8c; clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%); }
 
   @media (max-width: 480px) {
     .page { padding: 32px 16px 48px; gap: 24px; }
@@ -610,7 +611,7 @@
       <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="1" stitchTiles="stitch" result="noise"/>
       <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
       <feComponentTransfer in="gray" result="darkened">
-        <feFuncA type="discrete" tableValues="0 0 0 0 0 0.1 0.4 0.8 1"/>
+        <feFuncA type="discrete" tableValues="0 0 0 0 0 0.08 0.32 0.64 0.8"/>
       </feComponentTransfer>
       <feComposite in="darkened" in2="SourceGraphic" operator="over"/>
     </filter>

@@ -119,7 +119,7 @@ CONTATTI: ulisse.poggioni@gmail.com — +39 345 0727449 — [instagram.com/uliss
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-opus-4-5',
         max_tokens: 1000,
         stream: true,
         system: SYSTEM_PROMPT,

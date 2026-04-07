@@ -13,7 +13,7 @@
     --bg: #213546;
     --surface: #1e2f3e;
     --border: #2e4557;
-    --border-strong: #b23979;
+    --border-strong: #375876;
     --text: #86a3b3;
     --text-user: #ff5b8c;
     --text-muted: #5a7a8e;
@@ -29,7 +29,7 @@
     min-height: 100%;
     background: linear-gradient(
       to bottom,
-      #b23979 calc((100vw - 48px) * 2 / 3 - 80px),
+      #375876 calc((100vw - 48px) * 2 / 3 - 80px),
       #213546 calc((100vw - 48px) * 2 / 3 + 80px)
     );
     color: var(--text);
@@ -42,7 +42,7 @@
     html, body {
       background: linear-gradient(
         to bottom,
-        #b23979 calc(427px - 80px),
+        #375876 calc(427px - 80px),
         #213546 calc(427px + 80px)
       );
       }
@@ -610,7 +610,7 @@
       <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
       <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
       <feComponentTransfer in="gray" result="darkened">
-        <feFuncA type="linear" slope="0.08"/>
+        <feFuncA type="linear" slope="0.36"/>
       </feComponentTransfer>
       <feComposite in="darkened" in2="SourceGraphic" operator="over"/>
     </filter>

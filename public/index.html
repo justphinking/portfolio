@@ -607,10 +607,10 @@
 <svg width="0" height="0" style="position:absolute;pointer-events:none">
   <defs>
     <filter id="bg-grain" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="1" stitchTiles="stitch" result="noise"/>
       <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
       <feComponentTransfer in="gray" result="darkened">
-        <feFuncA type="linear" slope="0.36"/>
+        <feFuncA type="discrete" tableValues="0 0 0 0 0 0.1 0.4 0.8 1"/>
       </feComponentTransfer>
       <feComposite in="darkened" in2="SourceGraphic" operator="over"/>
     </filter>

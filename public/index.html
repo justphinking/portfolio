@@ -804,12 +804,16 @@ function buildInlineAnim(name) {
   const container = document.createElement('div');
   container.className = 'inline-anim';
   if (typeof lottie !== 'undefined') {
+    const ANIM_PATHS = {
+      'clienti': '/img/clienti/clienti.json',
+    };
+    const path = ANIM_PATHS[name] || `/img/ulisse/${name}/${name}.json`;
     lottie.loadAnimation({
       container,
       renderer: 'svg',
       loop: true,
       autoplay: true,
-      path: `/img/ulisse/${name}/${name}.json`,
+      path,
       rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
     });
   }

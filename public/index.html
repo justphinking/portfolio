@@ -204,6 +204,11 @@
     display: block;
   }
 
+  .inline-anim.full-width {
+    max-width: 100%;
+    aspect-ratio: unset;
+  }
+
   /* Slider */
   .slider-block {
     margin-top: 14px;
@@ -808,6 +813,7 @@ function buildInlineAnim(name) {
       'clienti': '/img/clienti/clienti.json',
     };
     const path = ANIM_PATHS[name] || `/img/ulisse/${name}/${name}.json`;
+    if (ANIM_PATHS[name]) container.classList.add('full-width');
     lottie.loadAnimation({
       container,
       renderer: 'svg',

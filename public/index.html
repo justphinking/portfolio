@@ -808,6 +808,7 @@ function buildVideoBlock(key) {
 }
 
 function buildInlineAnim(name) {
+  if (history.length === 0) return null;
   const container = document.createElement('div');
   container.className = 'inline-anim';
   if (typeof lottie !== 'undefined') {
@@ -1007,7 +1008,6 @@ async function streamAssistantMessage(reader) {
   let currentChunk = '';
   let fullHistory = '';
   let userScrolled = false;
-  let isOpening = false;
   let mediaJustInserted = false;
 
   const onScroll = () => {
@@ -1060,7 +1060,6 @@ async function streamAssistantMessage(reader) {
       if (el) { msg.appendChild(el); mediaJustInserted = true; }
     } else {
       const animMatch = tag.match(/^\[ANIM:([^\]]+)\]$/);
-      if (animMatch && isOpening) { return; }
       const gridMatch = tag.match(/^\[GRID:([^\]]+)\]$/);
       if (animMatch) {
         currentTextDiv = null;
@@ -1373,9 +1372,7 @@ async function generateOpening() {
     if (res.ok && res.body) {
       const savedHistory = history;
       history = [];
-      isOpening = true;
       await streamAssistantMessage(res.body.getReader());
-      isOpening = false;
       history = savedHistory;
       document.querySelectorAll('.suggestion-pills').forEach(el => el.remove());
     } else {

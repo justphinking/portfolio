@@ -1007,6 +1007,7 @@ async function streamAssistantMessage(reader) {
   let currentChunk = '';
   let fullHistory = '';
   let userScrolled = false;
+  let isOpening = false;
   let mediaJustInserted = false;
 
   const onScroll = () => {
@@ -1059,6 +1060,7 @@ async function streamAssistantMessage(reader) {
       if (el) { msg.appendChild(el); mediaJustInserted = true; }
     } else {
       const animMatch = tag.match(/^\[ANIM:([^\]]+)\]$/);
+      if (animMatch && isOpening) { return; }
       const gridMatch = tag.match(/^\[GRID:([^\]]+)\]$/);
       if (animMatch) {
         currentTextDiv = null;
@@ -1371,11 +1373,11 @@ async function generateOpening() {
     if (res.ok && res.body) {
       const savedHistory = history;
       history = [];
+      isOpening = true;
       await streamAssistantMessage(res.body.getReader());
+      isOpening = false;
       history = savedHistory;
-      // Remove any suggestion pills the opening may have generated
       document.querySelectorAll('.suggestion-pills').forEach(el => el.remove());
-      document.querySelectorAll('.inline-anim').forEach(el => el.remove());
     } else {
       const { body } = createMessageShell('assistant');
       body.innerHTML = renderHTML('Ciao. Sono qui per risponderti su Ulisse Poggioni.');

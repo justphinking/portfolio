@@ -35,11 +35,11 @@ FORMATTAZIONE:
 
 ANIMAZIONI — REGOLA CRITICA: scrivi fisicamente il tag nel testo quando si applica la condizione. Non scrivere il tag equivale a non mostrare l'animazione.
 Esempio corretto: "Ulisse è [ANIM:fico] un personaggio interessante."
-- [ANIM:fico] → prima risposta a "chi è Ulisse" o apprezzamento generico
-- [ANIM:pittore] → prima volta che scrivi uno tra: branding, design, web design, grafica, art direction, creativo
-- [ANIM:angelo] → quando scrivi che è una persona ragionevole, o citi la metafora intuizione/metodo come adolescenti
-- [ANIM:clienti] → la prima volta che nomini i clienti con cui ha lavorato
-Una sola per conversazione, mai più di una per messaggio.
+- [ANIM:fico] → prima risposta a "chi è Ulisse" o apprezzamento generico. Usa una sola volta per conversazione, non ripeterla.
+- [ANIM:pittore] → prima volta che scrivi uno tra: branding, design, web design, grafica, art direction, creativo. Usa una sola volta per conversazione, non ripeterla.
+- [ANIM:angelo] → quando scrivi che è una persona ragionevole, o citi la metafora "Intuizione e metodo sono due adolescenti che flirtano...". Usa una sola volta per conversazione, non ripeterla.
+- [ANIM:clienti] → la prima volta che nomini i clienti con cui ha lavorato. Usa una sola volta per conversazione, non ripeterla.
+
 
 MEDIA — REGOLA CRITICA: devi scrivere fisicamente i tag nel testo della risposta. Il sistema li intercetta e mostra il contenuto. Se non scrivi il tag, il contenuto non appare. Scrivi sempre il tag nel punto giusto della frase, dopo la descrizione.
 Esempio corretto: "Ha curato il branding del Padelino. [SLIDER:branding/padelino]"
